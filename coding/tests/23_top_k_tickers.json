@@ -1,0 +1,282 @@
+{
+ "key": "23_top_k_tickers",
+ "tests": [
+  {
+   "name": "edge-1",
+   "input": {
+    "trades": [
+     "AAPL"
+    ],
+    "k": 1
+   },
+   "expected": [
+    "AAPL"
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-2",
+   "input": {
+    "trades": [
+     "B",
+     "A",
+     "B",
+     "C",
+     "A"
+    ],
+    "k": 2
+   },
+   "expected": [
+    "A",
+    "B"
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-3",
+   "input": {
+    "trades": [
+     "Z",
+     "Y",
+     "X",
+     "Z"
+    ],
+    "k": 3
+   },
+   "expected": [
+    "Z",
+    "X",
+    "Y"
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-4",
+   "input": {
+    "trades": [
+     "AB",
+     "A",
+     "ABC",
+     "A",
+     "AB",
+     "ABC"
+    ],
+    "k": 2
+   },
+   "expected": [
+    "A",
+    "AB"
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-1",
+   "input": {
+    "trades": [
+     "NVDA",
+     "JPM",
+     "JPM",
+     "MSFT",
+     "JPM",
+     "GS",
+     "AAPL",
+     "NVDA"
+    ],
+    "k": 4
+   },
+   "expected": [
+    "JPM",
+    "NVDA",
+    "AAPL",
+    "GS"
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-2",
+   "input": {
+    "trades": [
+     "GS",
+     "GS",
+     "JPM",
+     "JPM",
+     "GS",
+     "AAPL"
+    ],
+    "k": 3
+   },
+   "expected": [
+    "GS",
+    "JPM",
+    "AAPL"
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-3",
+   "input": {
+    "trades": [
+     "JPM",
+     "AAPL",
+     "NVDA",
+     "TSLA",
+     "MSFT"
+    ],
+    "k": 2
+   },
+   "expected": [
+    "AAPL",
+    "JPM"
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-4",
+   "input": {
+    "trades": [
+     "NVDA",
+     "MSFT",
+     "AAPL",
+     "GS",
+     "GS",
+     "GS",
+     "JPM",
+     "JPM",
+     "NVDA"
+    ],
+    "k": 3
+   },
+   "expected": [
+    "GS",
+    "JPM",
+    "NVDA"
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-5",
+   "input": {
+    "trades": [
+     "TSLA",
+     "TSLA",
+     "MSFT",
+     "JPM",
+     "AAPL",
+     "JPM",
+     "TSLA",
+     "GS"
+    ],
+    "k": 5
+   },
+   "expected": [
+    "TSLA",
+    "JPM",
+    "AAPL",
+    "GS",
+    "MSFT"
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-6",
+   "input": {
+    "trades": [
+     "JPM",
+     "GS",
+     "JPM",
+     "TSLA",
+     "JPM",
+     "MSFT",
+     "GS",
+     "NVDA",
+     "NVDA"
+    ],
+    "k": 2
+   },
+   "expected": [
+    "JPM",
+    "GS"
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-7",
+   "input": {
+    "trades": [
+     "MSFT"
+    ],
+    "k": 1
+   },
+   "expected": [
+    "MSFT"
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-8",
+   "input": {
+    "trades": [
+     "TSLA",
+     "TSLA",
+     "JPM",
+     "MSFT",
+     "MSFT",
+     "JPM",
+     "MSFT"
+    ],
+    "k": 3
+   },
+   "expected": [
+    "MSFT",
+    "JPM",
+    "TSLA"
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-9",
+   "input": {
+    "trades": [
+     "GS",
+     "GS",
+     "GS",
+     "NVDA",
+     "JPM",
+     "MSFT",
+     "TSLA"
+    ],
+    "k": 2
+   },
+   "expected": [
+    "GS",
+    "JPM"
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-10",
+   "input": {
+    "trades": [
+     "JPM",
+     "GS"
+    ],
+    "k": 2
+   },
+   "expected": [
+    "GS",
+    "JPM"
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "perf",
+   "input": {
+    "perf_seed": 182137
+   },
+   "input_sha": "5605e98de18af02f7b6da848066e5adee8717edc33420d69a88194207cf45133",
+   "expected_sha": "4232c6082510c4de6786054821190ea909d80c04d0c8c901e884eb7a7e0889b3",
+   "size": "trades: 200000 items",
+   "time_limit": 2.0
+  }
+ ]
+}

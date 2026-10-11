@@ -1,0 +1,141 @@
+{
+ "key": "36_common_subsequence",
+ "tests": [
+  {
+   "name": "edge-1",
+   "input": {
+    "a": "",
+    "b": "abc"
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-2",
+   "input": {
+    "a": "abc",
+    "b": "abc"
+   },
+   "expected": 3,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-3",
+   "input": {
+    "a": "abc",
+    "b": "cba"
+   },
+   "expected": 1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-4",
+   "input": {
+    "a": "aaaa",
+    "b": "aa"
+   },
+   "expected": 2,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-5",
+   "input": {
+    "a": "abcde",
+    "b": "ace"
+   },
+   "expected": 3,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-6",
+   "input": {
+    "a": "z",
+    "b": ""
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-1",
+   "input": {
+    "a": "cccaca",
+    "b": ""
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-2",
+   "input": {
+    "a": "b",
+    "b": "aabbcac"
+   },
+   "expected": 1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-3",
+   "input": {
+    "a": "bbbaccaa",
+    "b": "a"
+   },
+   "expected": 1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-4",
+   "input": {
+    "a": "cbab",
+    "b": "abaaa"
+   },
+   "expected": 2,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-5",
+   "input": {
+    "a": "abbb",
+    "b": "caabaabb"
+   },
+   "expected": 4,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-6",
+   "input": {
+    "a": "caacbaba",
+    "b": ""
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-7",
+   "input": {
+    "a": "cab",
+    "b": "bbbacbac"
+   },
+   "expected": 2,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-8",
+   "input": {
+    "a": "babcac",
+    "b": "c"
+   },
+   "expected": 1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "perf",
+   "input": {
+    "perf_seed": 285084
+   },
+   "input_sha": "1ea7e9d664c22afb4ea39010f58bb04996cc0755a069b165927f67fb3ce609fe",
+   "expected_sha": "a4e987d17584557e2fbed011cddf66dc5185338bc3ef33d4226f86c32b7364dd",
+   "size": "a: 500 items, b: 500 items",
+   "time_limit": 2.0
+  }
+ ]
+}

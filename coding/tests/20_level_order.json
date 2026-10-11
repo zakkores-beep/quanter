@@ -1,0 +1,393 @@
+{
+ "key": "20_level_order",
+ "tests": [
+  {
+   "name": "edge-1",
+   "input": {
+    "root": []
+   },
+   "expected": [],
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-2",
+   "input": {
+    "root": [
+     1
+    ]
+   },
+   "expected": [
+    [
+     1
+    ]
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-3",
+   "input": {
+    "root": [
+     1,
+     null,
+     2,
+     null,
+     3
+    ]
+   },
+   "expected": [
+    [
+     1
+    ],
+    [
+     2
+    ],
+    [
+     3
+    ]
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-4",
+   "input": {
+    "root": [
+     5,
+     5,
+     5,
+     5,
+     5,
+     5,
+     5
+    ]
+   },
+   "expected": [
+    [
+     5
+    ],
+    [
+     5,
+     5
+    ],
+    [
+     5,
+     5,
+     5,
+     5
+    ]
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-5",
+   "input": {
+    "root": [
+     1,
+     2,
+     3,
+     null,
+     4,
+     5
+    ]
+   },
+   "expected": [
+    [
+     1
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     4,
+     5
+    ]
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-1",
+   "input": {
+    "root": [
+     0
+    ]
+   },
+   "expected": [
+    [
+     0
+    ]
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-2",
+   "input": {
+    "root": [
+     6,
+     4,
+     9,
+     null,
+     null,
+     5,
+     6,
+     8,
+     null,
+     null,
+     null,
+     4
+    ]
+   },
+   "expected": [
+    [
+     6
+    ],
+    [
+     4,
+     9
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     8
+    ],
+    [
+     4
+    ]
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-3",
+   "input": {
+    "root": [
+     2,
+     9,
+     2,
+     6,
+     7,
+     null,
+     null,
+     6,
+     1
+    ]
+   },
+   "expected": [
+    [
+     2
+    ],
+    [
+     9,
+     2
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     6,
+     1
+    ]
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-4",
+   "input": {
+    "root": [
+     1,
+     null,
+     0,
+     6,
+     2,
+     1,
+     2,
+     null,
+     3,
+     5
+    ]
+   },
+   "expected": [
+    [
+     1
+    ],
+    [
+     0
+    ],
+    [
+     6,
+     2
+    ],
+    [
+     1,
+     2,
+     3
+    ],
+    [
+     5
+    ]
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-5",
+   "input": {
+    "root": [
+     5,
+     1,
+     null,
+     8,
+     9,
+     null,
+     8,
+     2,
+     null,
+     null,
+     null,
+     6,
+     1
+    ]
+   },
+   "expected": [
+    [
+     5
+    ],
+    [
+     1
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     8,
+     2
+    ],
+    [
+     6,
+     1
+    ]
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-6",
+   "input": {
+    "root": [
+     0,
+     4,
+     null,
+     1,
+     1,
+     5,
+     5,
+     1,
+     null,
+     null,
+     null,
+     null,
+     null,
+     8
+    ]
+   },
+   "expected": [
+    [
+     0
+    ],
+    [
+     4
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     5,
+     5,
+     1
+    ],
+    [
+     8
+    ]
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-7",
+   "input": {
+    "root": [
+     9,
+     null,
+     2,
+     8,
+     5
+    ]
+   },
+   "expected": [
+    [
+     9
+    ],
+    [
+     2
+    ],
+    [
+     8,
+     5
+    ]
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-8",
+   "input": {
+    "root": [
+     7,
+     7
+    ]
+   },
+   "expected": [
+    [
+     7
+    ],
+    [
+     7
+    ]
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-9",
+   "input": {
+    "root": [
+     9,
+     3,
+     2,
+     7
+    ]
+   },
+   "expected": [
+    [
+     9
+    ],
+    [
+     3,
+     2
+    ],
+    [
+     7
+    ]
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "perf",
+   "input": {
+    "perf_seed": 158380
+   },
+   "input_sha": "2294579c0e58ec4fd80a8d1f8254db550b739ece919474a6cb826f56adff5b22",
+   "expected_sha": "afb021360e13e9b6f55b1ff87e02cef563a44499d4661f29551465e2f88cca92",
+   "size": "root: 199999 items",
+   "time_limit": 2.0
+  }
+ ]
+}

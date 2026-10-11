@@ -1,0 +1,198 @@
+{
+ "key": "28_max_profit",
+ "tests": [
+  {
+   "name": "edge-1",
+   "input": {
+    "prices": [
+     5
+    ]
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-2",
+   "input": {
+    "prices": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   },
+   "expected": 4,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-3",
+   "input": {
+    "prices": [
+     3,
+     3,
+     3
+    ]
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-4",
+   "input": {
+    "prices": [
+     0,
+     10000,
+     0,
+     10000
+    ]
+   },
+   "expected": 20000,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-5",
+   "input": {
+    "prices": [
+     2,
+     1,
+     2,
+     1,
+     2
+    ]
+   },
+   "expected": 2,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-1",
+   "input": {
+    "prices": [
+     9,
+     6,
+     10,
+     4,
+     3,
+     7,
+     5,
+     8
+    ]
+   },
+   "expected": 11,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-2",
+   "input": {
+    "prices": [
+     3,
+     0,
+     0,
+     1,
+     10,
+     10,
+     10
+    ]
+   },
+   "expected": 10,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-3",
+   "input": {
+    "prices": [
+     3,
+     9
+    ]
+   },
+   "expected": 6,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-4",
+   "input": {
+    "prices": [
+     1,
+     10
+    ]
+   },
+   "expected": 9,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-5",
+   "input": {
+    "prices": [
+     5,
+     0
+    ]
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-6",
+   "input": {
+    "prices": [
+     5,
+     9,
+     6
+    ]
+   },
+   "expected": 4,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-7",
+   "input": {
+    "prices": [
+     8,
+     2,
+     10,
+     4
+    ]
+   },
+   "expected": 8,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-8",
+   "input": {
+    "prices": [
+     5,
+     6
+    ]
+   },
+   "expected": 1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-9",
+   "input": {
+    "prices": [
+     8,
+     1,
+     9,
+     2,
+     7,
+     0,
+     4,
+     8,
+     1
+    ]
+   },
+   "expected": 21,
+   "time_limit": 2.0
+  },
+  {
+   "name": "perf",
+   "input": {
+    "perf_seed": 221732
+   },
+   "input_sha": "90d98b29b2a3d2f4e2573ee219afe3747215678fbaa1856fdc25b59b17cf48f3",
+   "expected_sha": "fd4a0ab54638d5f4eedb9a85deaff5fcd47bc8176c01edab59bea9545d0719a8",
+   "size": "prices: 200000 items",
+   "time_limit": 2.0
+  }
+ ]
+}

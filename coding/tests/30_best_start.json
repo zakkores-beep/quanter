@@ -1,0 +1,255 @@
+{
+ "key": "30_best_start",
+ "tests": [
+  {
+   "name": "edge-1",
+   "input": {
+    "gas": [
+     1
+    ],
+    "cost": [
+     1
+    ]
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-2",
+   "input": {
+    "gas": [
+     1
+    ],
+    "cost": [
+     2
+    ]
+   },
+   "expected": -1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-3",
+   "input": {
+    "gas": [
+     0,
+     2
+    ],
+    "cost": [
+     1,
+     1
+    ]
+   },
+   "expected": 1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-4",
+   "input": {
+    "gas": [
+     2,
+     3,
+     4
+    ],
+    "cost": [
+     3,
+     4,
+     3
+    ]
+   },
+   "expected": -1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-5",
+   "input": {
+    "gas": [
+     0,
+     0,
+     0
+    ],
+    "cost": [
+     0,
+     0,
+     0
+    ]
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-6",
+   "input": {
+    "gas": [
+     3,
+     0,
+     0
+    ],
+    "cost": [
+     0,
+     0,
+     3
+    ]
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-1",
+   "input": {
+    "gas": [
+     3
+    ],
+    "cost": [
+     4
+    ]
+   },
+   "expected": -1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-2",
+   "input": {
+    "gas": [
+     1,
+     3,
+     4
+    ],
+    "cost": [
+     3,
+     0,
+     3
+    ]
+   },
+   "expected": 1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-3",
+   "input": {
+    "gas": [
+     1,
+     0,
+     4
+    ],
+    "cost": [
+     1,
+     1,
+     0
+    ]
+   },
+   "expected": 2,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-4",
+   "input": {
+    "gas": [
+     2,
+     3,
+     2,
+     3,
+     0
+    ],
+    "cost": [
+     2,
+     3,
+     1,
+     0,
+     1
+    ]
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-5",
+   "input": {
+    "gas": [
+     3,
+     2,
+     4
+    ],
+    "cost": [
+     3,
+     3,
+     2
+    ]
+   },
+   "expected": 2,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-6",
+   "input": {
+    "gas": [
+     1,
+     0,
+     1,
+     3,
+     1,
+     2,
+     0
+    ],
+    "cost": [
+     4,
+     4,
+     3,
+     1,
+     0,
+     2,
+     0
+    ]
+   },
+   "expected": -1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-7",
+   "input": {
+    "gas": [
+     2,
+     3,
+     2,
+     2,
+     4,
+     3,
+     1
+    ],
+    "cost": [
+     3,
+     4,
+     0,
+     3,
+     0,
+     4,
+     1
+    ]
+   },
+   "expected": 2,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-8",
+   "input": {
+    "gas": [
+     2
+    ],
+    "cost": [
+     0
+    ]
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "perf",
+   "input": {
+    "perf_seed": 237570
+   },
+   "input_sha": "da5b303585088d99f5c8ae975277b005e6e19224d356ffe84e8daf53255b5158",
+   "expected_sha": "e0c99b248f20f40461c1a6cb37b00bb0170d2ba6bf7f41b4376404e70f96ddc0",
+   "size": "gas: 200000 items, cost: 200000 items",
+   "time_limit": 2.0
+  }
+ ]
+}

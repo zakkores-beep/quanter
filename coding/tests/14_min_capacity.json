@@ -1,0 +1,236 @@
+{
+ "key": "14_min_capacity",
+ "tests": [
+  {
+   "name": "edge-1",
+   "input": {
+    "weights": [
+     7
+    ],
+    "days": 1
+   },
+   "expected": 7,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-2",
+   "input": {
+    "weights": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "days": 5
+   },
+   "expected": 5,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-3",
+   "input": {
+    "weights": [
+     10,
+     1,
+     1,
+     1
+    ],
+    "days": 2
+   },
+   "expected": 10,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-4",
+   "input": {
+    "weights": [
+     500,
+     500,
+     500,
+     500
+    ],
+    "days": 2
+   },
+   "expected": 1000,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-5",
+   "input": {
+    "weights": [
+     1,
+     1,
+     1,
+     1,
+     500
+    ],
+    "days": 2
+   },
+   "expected": 500,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-6",
+   "input": {
+    "weights": [
+     5,
+     5,
+     5,
+     5
+    ],
+    "days": 3
+   },
+   "expected": 10,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-1",
+   "input": {
+    "weights": [
+     1,
+     4,
+     5,
+     1,
+     7,
+     7,
+     10,
+     10,
+     3
+    ],
+    "days": 8
+   },
+   "expected": 10,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-2",
+   "input": {
+    "weights": [
+     8,
+     5,
+     7,
+     10,
+     8,
+     2,
+     1,
+     4,
+     10
+    ],
+    "days": 3
+   },
+   "expected": 20,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-3",
+   "input": {
+    "weights": [
+     9,
+     3,
+     6,
+     9
+    ],
+    "days": 3
+   },
+   "expected": 9,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-4",
+   "input": {
+    "weights": [
+     9,
+     4,
+     3,
+     4,
+     1,
+     5,
+     8,
+     8,
+     6
+    ],
+    "days": 9
+   },
+   "expected": 9,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-5",
+   "input": {
+    "weights": [
+     2,
+     1,
+     6,
+     9,
+     10,
+     3,
+     10
+    ],
+    "days": 2
+   },
+   "expected": 23,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-6",
+   "input": {
+    "weights": [
+     2,
+     4,
+     9,
+     9,
+     4,
+     2,
+     2,
+     8
+    ],
+    "days": 7
+   },
+   "expected": 9,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-7",
+   "input": {
+    "weights": [
+     8,
+     4
+    ],
+    "days": 1
+   },
+   "expected": 12,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-8",
+   "input": {
+    "weights": [
+     8,
+     4,
+     10,
+     1,
+     5,
+     2,
+     7,
+     10,
+     3,
+     6
+    ],
+    "days": 1
+   },
+   "expected": 56,
+   "time_limit": 2.0
+  },
+  {
+   "name": "perf",
+   "input": {
+    "perf_seed": 110866
+   },
+   "input_sha": "c8dab22c92d8e9b018bd18a75efa95a2420c55f57e4c46c87e83ea53e56a7f3b",
+   "expected_sha": "418d94463c6ba1cc5908d81fc98f17e1cb4d3cdbbe010550269b74bac681e4f7",
+   "size": "weights: 50000 items",
+   "time_limit": 2.0
+  }
+ ]
+}

@@ -1,0 +1,175 @@
+{
+ "key": "37_count_islands",
+ "tests": [
+  {
+   "name": "edge-1",
+   "input": {
+    "grid": [
+     "0"
+    ]
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-2",
+   "input": {
+    "grid": [
+     "1"
+    ]
+   },
+   "expected": 1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-3",
+   "input": {
+    "grid": [
+     "11",
+     "11"
+    ]
+   },
+   "expected": 1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-4",
+   "input": {
+    "grid": [
+     "1111111"
+    ]
+   },
+   "expected": 1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-5",
+   "input": {
+    "grid": [
+     "111",
+     "101",
+     "111"
+    ]
+   },
+   "expected": 1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-6",
+   "input": {
+    "grid": [
+     "10",
+     "01"
+    ]
+   },
+   "expected": 2,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-7",
+   "input": {
+    "grid": [
+     "0",
+     "1",
+     "0",
+     "1"
+    ]
+   },
+   "expected": 2,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-1",
+   "input": {
+    "grid": [
+     "0011"
+    ]
+   },
+   "expected": 1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-2",
+   "input": {
+    "grid": [
+     "11011",
+     "10100",
+     "01110"
+    ]
+   },
+   "expected": 3,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-3",
+   "input": {
+    "grid": [
+     "01",
+     "00"
+    ]
+   },
+   "expected": 1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-4",
+   "input": {
+    "grid": [
+     "10101",
+     "00100"
+    ]
+   },
+   "expected": 3,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-5",
+   "input": {
+    "grid": [
+     "11",
+     "01",
+     "11",
+     "00",
+     "10"
+    ]
+   },
+   "expected": 2,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-6",
+   "input": {
+    "grid": [
+     "010011"
+    ]
+   },
+   "expected": 2,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-7",
+   "input": {
+    "grid": [
+     "1010",
+     "0110",
+     "0100",
+     "1010",
+     "0101",
+     "0110"
+    ]
+   },
+   "expected": 6,
+   "time_limit": 2.0
+  },
+  {
+   "name": "perf",
+   "input": {
+    "perf_seed": 293003
+   },
+   "input_sha": "f8f29f79315e78250ab38ec060fc171b34a5a691ee5db3d0306f88e45e3a4451",
+   "expected_sha": "6317984746f7082680fb3ce0ea4fc5f9ae37a06491010084a784ee8568021e23",
+   "size": "grid: 400 items",
+   "time_limit": 2.0
+  }
+ ]
+}

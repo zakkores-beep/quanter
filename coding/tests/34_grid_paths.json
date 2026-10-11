@@ -1,0 +1,176 @@
+{
+ "key": "34_grid_paths",
+ "tests": [
+  {
+   "name": "edge-1",
+   "input": {
+    "grid": [
+     "."
+    ]
+   },
+   "expected": 1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-2",
+   "input": {
+    "grid": [
+     "#"
+    ]
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-3",
+   "input": {
+    "grid": [
+     "..",
+     ".."
+    ]
+   },
+   "expected": 2,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-4",
+   "input": {
+    "grid": [
+     "..#"
+    ]
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-5",
+   "input": {
+    "grid": [
+     "#.."
+    ]
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-6",
+   "input": {
+    "grid": [
+     "....."
+    ]
+   },
+   "expected": 1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-7",
+   "input": {
+    "grid": [
+     ".",
+     ".",
+     "."
+    ]
+   },
+   "expected": 1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-8",
+   "input": {
+    "grid": [
+     "..",
+     "#.",
+     ".."
+    ]
+   },
+   "expected": 1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-1",
+   "input": {
+    "grid": [
+     "###..."
+    ]
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-2",
+   "input": {
+    "grid": [
+     "##.",
+     "...",
+     "..."
+    ]
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-3",
+   "input": {
+    "grid": [
+     "..#.",
+     "....",
+     ".##.",
+     "....",
+     "...."
+    ]
+   },
+   "expected": 6,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-4",
+   "input": {
+    "grid": [
+     ".#..",
+     "#..#",
+     "....",
+     "#...",
+     "#...",
+     "...."
+    ]
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-5",
+   "input": {
+    "grid": [
+     ".#",
+     ".#",
+     ".#",
+     "#.",
+     ".."
+    ]
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-6",
+   "input": {
+    "grid": [
+     ".#...",
+     "....."
+    ]
+   },
+   "expected": 1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "perf",
+   "input": {
+    "perf_seed": 269246
+   },
+   "input_sha": "ef25b83162dcd103f5944a55e0e9c256d0693034afa91a30b983af8d054fca1f",
+   "expected_sha": "db37e6d7128bad92aa5b194d09da76a9dd6ef90dbd46431c452053ef54d13d7f",
+   "size": "grid: 300 items",
+   "time_limit": 2.0
+  }
+ ]
+}

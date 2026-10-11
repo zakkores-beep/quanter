@@ -1,0 +1,220 @@
+{
+ "key": "03_subarray_sum_k",
+ "tests": [
+  {
+   "name": "edge-1",
+   "input": {
+    "pnl": [
+     0,
+     0,
+     0
+    ],
+    "k": 0
+   },
+   "expected": 6,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-2",
+   "input": {
+    "pnl": [
+     1
+    ],
+    "k": 1
+   },
+   "expected": 1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-3",
+   "input": {
+    "pnl": [
+     1
+    ],
+    "k": 2
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-4",
+   "input": {
+    "pnl": [
+     -1000,
+     -1000,
+     -1000,
+     -1000,
+     -1000
+    ],
+    "k": -2000
+   },
+   "expected": 4,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-5",
+   "input": {
+    "pnl": [
+     5,
+     -5,
+     5,
+     -5,
+     5
+    ],
+    "k": 5
+   },
+   "expected": 6,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-6",
+   "input": {
+    "pnl": [
+     1,
+     2,
+     3
+    ],
+    "k": 1000000000
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-1",
+   "input": {
+    "pnl": [
+     1,
+     -1,
+     -2,
+     2,
+     0,
+     0,
+     1,
+     0
+    ],
+    "k": 2
+   },
+   "expected": 3,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-2",
+   "input": {
+    "pnl": [
+     2
+    ],
+    "k": 1
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-3",
+   "input": {
+    "pnl": [
+     0,
+     1
+    ],
+    "k": 3
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-4",
+   "input": {
+    "pnl": [
+     -3,
+     -1,
+     3,
+     -1,
+     1,
+     1,
+     2,
+     2,
+     2
+    ],
+    "k": -4
+   },
+   "expected": 1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-5",
+   "input": {
+    "pnl": [
+     -2,
+     2,
+     1,
+     1,
+     -3,
+     -1,
+     -2,
+     2,
+     1,
+     1,
+     -3
+    ],
+    "k": -2
+   },
+   "expected": 12,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-6",
+   "input": {
+    "pnl": [
+     -1,
+     -3,
+     1,
+     -2,
+     2,
+     3,
+     0
+    ],
+    "k": -4
+   },
+   "expected": 2,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-7",
+   "input": {
+    "pnl": [
+     0,
+     -2,
+     3,
+     -1,
+     0
+    ],
+    "k": 2
+   },
+   "expected": 2,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-8",
+   "input": {
+    "pnl": [
+     -2,
+     3,
+     -1,
+     0
+    ],
+    "k": -1
+   },
+   "expected": 2,
+   "time_limit": 2.0
+  },
+  {
+   "name": "perf",
+   "input": {
+    "perf_seed": 23757
+   },
+   "input_sha": "624952d5df4d03937199b2e6d41376abe14015bc1cf7d282651e0a9c9e56d718",
+   "expected_sha": "48672ad2998b7f172bc633950902c30c0d16b3a2cfb517a303fb86e306de4e84",
+   "size": "pnl: 200000 items",
+   "time_limit": 2.0
+  }
+ ]
+}

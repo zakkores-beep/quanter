@@ -1,0 +1,43 @@
+problem                    tests  answers  brute=ref   ref perf brute perf  status
+01_pair_count                 15        6    500/500    0.03/2s        TLE  OK
+02_longest_streak             15        5    500/500    0.08/2s        TLE  OK
+03_subarray_sum_k             15        7    500/500    0.03/2s        TLE  OK
+04_almost_palindrome          16        2    500/500    0.01/2s        TLE  OK
+05_zero_triplets              15        4    500/500    0.13/2s        TLE  OK
+06_container_water            15        9    500/500    0.03/2s        TLE  OK
+07_best_k_window              15       12    500/500    0.01/2s        TLE  OK
+08_longest_unique             15        6    500/500    0.05/2s        TLE  OK
+09_shortest_window            15        6    500/500    0.04/2s        TLE  OK
+10_balanced_brackets          16        2    500/500    0.01/2s        TLE  OK
+11_days_until_higher          15       14    500/500    0.04/2s        TLE  OK
+12_collisions                 15       13    500/500    0.04/2s        TLE  OK
+13_count_in_ranges            15       13    500/500    0.49/4s        TLE  OK
+14_min_capacity               15       10    500/500    0.09/2s        TLE  OK
+15_isqrt_all                  15       14    500/500    0.04/2s       PASS  OK
+16_reverse_list               15       14    500/500    0.00/2s       PASS  OK
+17_merge_two_lists            15       14    500/500    0.01/2s       PASS  OK
+18_reorder_list               15       14    500/500    0.01/2s       PASS  OK
+19_max_depth                  15        8    500/500    0.02/2s       PASS  OK
+20_level_order                15       14    500/500    0.02/2s       PASS  OK
+21_validate_bst               15        2    500/500    0.06/2s       PASS  OK
+22_kth_largest                15        8    500/500    0.07/2s       PASS  OK
+23_top_k_tickers              15       13    500/500    0.01/2s        TLE  OK
+24_merge_k_sorted             15       13    500/500    0.12/2s       PASS  OK
+25_merge_intervals            15       14    500/500    0.28/2s        TLE  OK
+26_insert_interval            15       14    500/500    0.01/2s        TLE  OK
+27_min_rooms                  15        5    500/500    0.20/2s        TLE  OK
+28_max_profit                 15       11    500/500    0.02/2s         RE  OK
+29_can_reach_end              15        2    500/500    0.02/2s        TLE  OK
+30_best_start                 15        4    500/500    0.02/2s        TLE  OK
+31_non_adjacent               15       13    500/500    0.01/2s        TLE  OK
+32_min_coins                  15        6    500/500    0.01/2s       PASS  OK
+33_longest_rising             15        5    500/500    0.04/2s        TLE  OK
+34_grid_paths                 15        4    500/500    0.02/2s        TLE  OK
+35_edit_distance              15        5    500/500    0.04/2s         RE  OK
+36_common_subsequence         15        5    500/500    0.04/2s        TLE  OK
+37_count_islands              15        5    500/500    0.10/2s        TLE  OK
+38_can_finish                 15        2    500/500    0.39/4s        TLE  OK
+39_shortest_path              15        6    500/500    0.18/2s        TLE  OK
+40_cheapest_route             15        8    500/500    0.78/6s        TLE  OK
+
+40/40 problems verified, 0 failed. Brute force fails the perf test (TLE or recursion crash) in 30/40 problems.

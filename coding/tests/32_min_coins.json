@@ -1,0 +1,182 @@
+{
+ "key": "32_min_coins",
+ "tests": [
+  {
+   "name": "edge-1",
+   "input": {
+    "lots": [
+     1
+    ],
+    "amount": 0
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-2",
+   "input": {
+    "lots": [
+     7
+    ],
+    "amount": 14
+   },
+   "expected": 2,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-3",
+   "input": {
+    "lots": [
+     5,
+     10
+    ],
+    "amount": 1
+   },
+   "expected": -1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-4",
+   "input": {
+    "lots": [
+     10000
+    ],
+    "amount": 10000
+   },
+   "expected": 1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-5",
+   "input": {
+    "lots": [
+     2,
+     5
+    ],
+    "amount": 3
+   },
+   "expected": -1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-6",
+   "input": {
+    "lots": [
+     9,
+     6,
+     1
+    ],
+    "amount": 12
+   },
+   "expected": 2,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-1",
+   "input": {
+    "lots": [
+     9,
+     7,
+     8,
+     2
+    ],
+    "amount": 10
+   },
+   "expected": 2,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-2",
+   "input": {
+    "lots": [
+     8,
+     5
+    ],
+    "amount": 22
+   },
+   "expected": -1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-3",
+   "input": {
+    "lots": [
+     1,
+     6
+    ],
+    "amount": 0
+   },
+   "expected": 0,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-4",
+   "input": {
+    "lots": [
+     5,
+     7
+    ],
+    "amount": 13
+   },
+   "expected": -1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-5",
+   "input": {
+    "lots": [
+     9,
+     6
+    ],
+    "amount": 8
+   },
+   "expected": -1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-6",
+   "input": {
+    "lots": [
+     1
+    ],
+    "amount": 18
+   },
+   "expected": 18,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-7",
+   "input": {
+    "lots": [
+     5,
+     9,
+     1
+    ],
+    "amount": 11
+   },
+   "expected": 3,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-8",
+   "input": {
+    "lots": [
+     7
+    ],
+    "amount": 26
+   },
+   "expected": -1,
+   "time_limit": 2.0
+  },
+  {
+   "name": "perf",
+   "input": {
+    "perf_seed": 253408
+   },
+   "input_sha": "1762da8c59014df6bce1f19effe367ac1c9cb4f2483fa0a34acc1dc1a618fea0",
+   "expected_sha": "ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d",
+   "size": "lots: 12 items",
+   "time_limit": 2.0
+  }
+ ]
+}

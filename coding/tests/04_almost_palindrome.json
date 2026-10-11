@@ -1,0 +1,135 @@
+{
+ "key": "04_almost_palindrome",
+ "tests": [
+  {
+   "name": "edge-1",
+   "input": {
+    "s": "a"
+   },
+   "expected": true,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-2",
+   "input": {
+    "s": "ab"
+   },
+   "expected": true,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-3",
+   "input": {
+    "s": "aab"
+   },
+   "expected": true,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-4",
+   "input": {
+    "s": "baa"
+   },
+   "expected": true,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-5",
+   "input": {
+    "s": "abcdba"
+   },
+   "expected": true,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-6",
+   "input": {
+    "s": "abcdcbxa"
+   },
+   "expected": true,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-7",
+   "input": {
+    "s": "xabcdcbax"
+   },
+   "expected": true,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-8",
+   "input": {
+    "s": "abxcba"
+   },
+   "expected": true,
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-9",
+   "input": {
+    "s": "abxycba"
+   },
+   "expected": false,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-1",
+   "input": {
+    "s": "cccbcacccca"
+   },
+   "expected": false,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-2",
+   "input": {
+    "s": "aaa"
+   },
+   "expected": true,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-3",
+   "input": {
+    "s": "bbbaaaabbb"
+   },
+   "expected": true,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-4",
+   "input": {
+    "s": "cab"
+   },
+   "expected": false,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-5",
+   "input": {
+    "s": "acaccacba"
+   },
+   "expected": true,
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-6",
+   "input": {
+    "s": "baaabaaab"
+   },
+   "expected": true,
+   "time_limit": 2.0
+  },
+  {
+   "name": "perf",
+   "input": {
+    "perf_seed": 31676
+   },
+   "input_sha": "2594850516d1c0f6e35576077557c854bdd9032ea1c9fb0be6a25b702b66cdc9",
+   "expected_sha": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+   "size": "s: 200000 items",
+   "time_limit": 2.0
+  }
+ ]
+}

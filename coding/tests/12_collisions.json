@@ -1,0 +1,229 @@
+{
+ "key": "12_collisions",
+ "tests": [
+  {
+   "name": "edge-1",
+   "input": {
+    "orders": []
+   },
+   "expected": [],
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-2",
+   "input": {
+    "orders": [
+     3
+    ]
+   },
+   "expected": [
+    3
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-3",
+   "input": {
+    "orders": [
+     1,
+     -2,
+     -2,
+     -2
+    ]
+   },
+   "expected": [
+    -2,
+    -2,
+    -2
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-4",
+   "input": {
+    "orders": [
+     3,
+     4,
+     -5,
+     6
+    ]
+   },
+   "expected": [
+    -5,
+    6
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-5",
+   "input": {
+    "orders": [
+     -1,
+     -2,
+     3,
+     4
+    ]
+   },
+   "expected": [
+    -1,
+    -2,
+    3,
+    4
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-6",
+   "input": {
+    "orders": [
+     2,
+     2,
+     -2
+    ]
+   },
+   "expected": [
+    2
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "edge-7",
+   "input": {
+    "orders": [
+     1000,
+     -999,
+     -1,
+     -1000
+    ]
+   },
+   "expected": [],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-1",
+   "input": {
+    "orders": [
+     -2,
+     2,
+     -3,
+     4,
+     -2
+    ]
+   },
+   "expected": [
+    -2,
+    -3,
+    4
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-2",
+   "input": {
+    "orders": [
+     1,
+     4,
+     -4,
+     -4,
+     3,
+     -2,
+     5
+    ]
+   },
+   "expected": [
+    -4,
+    3,
+    5
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-3",
+   "input": {
+    "orders": [
+     5,
+     2
+    ]
+   },
+   "expected": [
+    5,
+    2
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-4",
+   "input": {
+    "orders": [
+     -1
+    ]
+   },
+   "expected": [
+    -1
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-5",
+   "input": {
+    "orders": [
+     -5,
+     -2,
+     -3,
+     -2
+    ]
+   },
+   "expected": [
+    -5,
+    -2,
+    -3,
+    -2
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-6",
+   "input": {
+    "orders": [
+     -5,
+     5
+    ]
+   },
+   "expected": [
+    -5,
+    5
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "rand-7",
+   "input": {
+    "orders": [
+     1,
+     5,
+     -3,
+     -2,
+     -2,
+     -2,
+     -1,
+     -1
+    ]
+   },
+   "expected": [
+    1,
+    5
+   ],
+   "time_limit": 2.0
+  },
+  {
+   "name": "perf",
+   "input": {
+    "perf_seed": 95028
+   },
+   "input_sha": "1ca41fe393c5e49f9ba3695ef94bdf15ec8abf9aa717d273f1b3297cd1200222",
+   "expected_sha": "39bb95d3619aca7ef7aac2c0b810af85403da98f3869928bd5497df3544c0e4b",
+   "size": "orders: 200000 items",
+   "time_limit": 2.0
+  }
+ ]
+}
