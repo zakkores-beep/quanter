@@ -25,3 +25,15 @@ At your request, built this before the math and diagnostics trainers.
 - **Bugs fixed during verification:**
   - An edge case in problem 15 (`2**60`) exceeded the stated `10**18` constraint. Replaced it, and added `valid()` constraint checks to every spec.
   - Time limits raised for problems 13, 38 and 40 to keep at least 4x headroom.
+
+## Numerical Sprint: Aon numerical trainer (2026-10-28)
+- New page at https://claude.ai/artifact/E8nbR9Vrx9pp6fRmgzXn5p, built from the user's Fidelity numerical mock (6 tabs, 18 statements, 6 minutes). The existing Fidelity Aon Trainer artifact was left untouched.
+- **Verification** (`node aon-numerical/verify.js 20000`):
+  - 20,000 tests, 360,000 statements, 0 failures, with at least 7,000 checks for each of 30 statement templates.
+  - Answer mix: 37% True, 35% False, 28% Cannot say (the mock had 4 of 14 Cannot say).
+- **Mutation check:** flipping every answer on 500 tests was caught 9,000 / 9,000 times.
+- **Bugs fixed during verification:**
+  - "a air filter" and "a 8 / 11 / 18 kilo parcel" became "an …".
+  - A verifier gap for "Last year" Cannot-say wording.
+  - Chart labels overlapping on the expenses chart.
+  - A missing hidden-screen rule.

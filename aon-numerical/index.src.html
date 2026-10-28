@@ -1,0 +1,462 @@
+<title>Numerical Sprint</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+/* Layout: a test-centre sheet. Tab bubbles across the top, the data sheet in the middle, the statement and three answers at the bottom. */
+:root {
+  --ground: #E7EAEE; --sheet: #FBFCFD; --ink: #1B2430; --muted: #5D6875; --rule: #CDD4DC; --bubble: #DDE2E8;
+  --bar: #222A33; --bar-ink: #F1F3F5; --accent: #1F4E8C; --accent-soft: #DCE6F3;
+  --ok: #23774A; --ok-soft: #DCEFE3; --bad: #B3362F; --bad-soft: #F6DFDC; --warn: #B3362F;
+  --c-navy: #13235B; --c-blue: #2C6DB3; --c-sky: #8DB9E2; --c-orange: #E08A1E;
+  --th: #A3A8AE; --th-ink: #111418; --th-rule: #81868C; --clock-low: #FF8A80;
+  --f-ui: "Libre Franklin", "Franklin Gothic Medium", "Segoe UI", Arial, sans-serif;
+  --f-chart: "Source Serif 4", "Times New Roman", Georgia, serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #111519; --sheet: #191E24; --ink: #E6EAEE; --muted: #9AA5B1; --rule: #2F3842; --bubble: #262D35;
+  --bar: #0B0E11; --bar-ink: #E6EAEE; --accent: #78A9E0; --accent-soft: #1E2F44;
+  --ok: #5FC08A; --ok-soft: #173326; --bad: #EC7D74; --bad-soft: #3B201E; --warn: #EC7D74;
+  --c-navy: #9DB0F0; --c-blue: #5A9BDD; --c-sky: #2F5F8C; --c-orange: #E8A04A; --th: #3A424C; --th-ink: #EEF1F4; --th-rule: #4A535E; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #111519; --sheet: #191E24; --ink: #E6EAEE; --muted: #9AA5B1; --rule: #2F3842; --bubble: #262D35;
+  --bar: #0B0E11; --bar-ink: #E6EAEE; --accent: #78A9E0; --accent-soft: #1E2F44;
+  --ok: #5FC08A; --ok-soft: #173326; --bad: #EC7D74; --bad-soft: #3B201E; --warn: #EC7D74;
+  --c-navy: #9DB0F0; --c-blue: #5A9BDD; --c-sky: #2F5F8C; --c-orange: #E8A04A; --th: #3A424C; --th-ink: #EEF1F4; --th-rule: #4A535E; color-scheme: dark }
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--ground); color: var(--ink); font-family: var(--f-ui); font-size: 16px; line-height: 1.5; font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 920px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 24px 48px; }
+h1 { font-weight: 800; font-size: clamp(28px, 5vw, 40px); letter-spacing: -0.015em; line-height: 1.05; margin: 0; text-wrap: balance; }
+h2 { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+.lede { color: var(--muted); margin: 10px 0 0; max-width: 62ch; }
+.btn { background: var(--ink); color: var(--sheet); border: 0; border-radius: 6px; padding: 12px 22px; font-weight: 700; cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); padding: 10.5px 20px; }
+.hint { color: var(--muted); font-size: 14px; }
+kbd { font-family: var(--f-ui); font-size: 12px; border: 1px solid var(--rule); border-bottom-width: 2px; border-radius: 3px; padding: 0 5px; background: var(--sheet); }
+
+/* home */
+.home { display: grid; gap: 28px; }
+.cols { display: grid; grid-template-columns: 1.1fr 1fr; gap: 28px; }
+.cols > * { min-width: 0; }
+.panel { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; padding: 18px 20px; }
+.mode { display: flex; gap: 12px; align-items: flex-start; width: 100%; text-align: left; background: none; border: 1.5px solid var(--rule); border-radius: 8px; padding: 12px 14px; cursor: pointer; }
+.mode + .mode { margin-top: 10px; }
+.mode[aria-checked="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.mode b { display: block; }
+.mode span { color: var(--muted); font-size: 14px; }
+.dot { flex: 0 0 auto; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--muted); margin-top: 3px; }
+.mode[aria-checked="true"] .dot { border-color: var(--accent); box-shadow: inset 0 0 0 4px var(--sheet); background: var(--accent); }
+.start { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-top: 16px; }
+ol.tips { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 15px; }
+table.hist { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.hist th { text-align: left; color: var(--muted); font-weight: 600; border-bottom: 1.5px solid var(--ink); padding: 4px 8px 4px 0; }
+table.hist td { border-bottom: 1px solid var(--rule); padding: 5px 8px 5px 0; }
+.empty { color: var(--muted); font-size: 14px; margin: 0; }
+
+/* test */
+.topbar { background: var(--bar); color: var(--bar-ink); border-radius: 10px 10px 0 0; display: flex; align-items: center; gap: 14px; padding: 10px 16px; }
+.topbar .ttl { font-weight: 600; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.clock { font-weight: 800; font-size: 20px; min-width: 60px; text-align: right; }
+.clock.low { color: var(--clock-low); }
+.linkbtn { background: none; border: 0; color: inherit; text-decoration: underline; cursor: pointer; padding: 4px 0; font-size: 14px; opacity: .85; }
+.stage { background: var(--sheet); border: 1px solid var(--rule); border-top: 0; border-radius: 0 0 10px 10px; padding: 18px 20px 22px; }
+.bubbles { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.bub { width: 56px; height: 56px; border-radius: 50%; border: 0; background: var(--bubble); color: var(--ink); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,.12); }
+.bub svg { width: 26px; height: 26px; }
+.bub[aria-selected="true"] { background: var(--ink); color: var(--sheet); outline: 2px dashed var(--ink); outline-offset: 3px; }
+.sheettitle { text-align: center; font-weight: 700; font-size: 20px; margin: 16px 0 4px; }
+.sub { text-align: center; font-weight: 700; font-size: 15px; margin: 4px 0 10px; }
+.sheet { min-height: 330px; display: grid; gap: 8px; align-content: start; }
+.tablewrap { overflow-x: auto; }
+table.dt { border-collapse: collapse; margin: 0 auto; font-size: 15px; min-width: 300px; }
+table.dt th { background: var(--th); color: var(--th-ink); text-align: left; padding: 7px 12px; font-weight: 700; border: 1px solid var(--th-rule); }
+table.dt td { border: 1px solid var(--rule); padding: 7px 12px; }
+table.dt td.v { text-align: right; min-width: 90px; }
+.foot { text-align: center; font-size: 14px; color: var(--muted); margin: 2px 0 0; }
+svg.chart { width: 100%; max-width: 620px; height: auto; display: block; margin: 0 auto; font-family: var(--f-chart); }
+svg.donut { max-width: 340px; }
+.chart text { fill: var(--ink); }
+.chart .ax { font-size: 14px; fill: var(--muted); }
+.chart .grid { stroke: var(--rule); stroke-width: 1; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 22px; justify-content: center; font-family: var(--f-chart); font-size: 16px; }
+.legend i { display: inline-block; width: 13px; height: 13px; border-radius: 50%; border: 3.5px solid currentColor; margin-right: 6px; vertical-align: -1px; }
+.caption { text-align: center; font-family: var(--f-chart); font-size: 15px; margin: 0; }
+.statement { font-size: clamp(17px, 2.4vw, 20px); line-height: 1.45; margin: 22px 0 18px; min-height: 2.9em; }
+.answers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.ans { border: 1px solid var(--rule); background: var(--bubble); border-radius: 4px; padding: 12px 6px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 3px rgba(0,0,0,.1); }
+.ans:hover { border-color: var(--accent); }
+.ans[aria-pressed="true"] { background: var(--ink); color: var(--sheet); border-color: var(--ink); }
+.ans.right { background: var(--ok-soft); border-color: var(--ok); color: var(--ink); }
+.ans.wrong { background: var(--bad-soft); border-color: var(--bad); color: var(--ink); }
+.ans[disabled] { cursor: default; }
+.nav { display: flex; gap: 10px; align-items: center; justify-content: space-between; margin-top: 16px; flex-wrap: wrap; }
+.dots { display: flex; gap: 5px; flex-wrap: wrap; }
+.dots button { width: 22px; height: 22px; border-radius: 4px; border: 1.5px solid var(--rule); background: var(--sheet); font-size: 11px; cursor: pointer; padding: 0; }
+.dots button.done { background: var(--accent-soft); border-color: var(--accent); }
+.dots button.cur { border-color: var(--ink); border-width: 2px; font-weight: 700; }
+.feedback { margin-top: 16px; border-left: 3px solid var(--accent); padding: 6px 0 6px 14px; }
+.feedback b.ok { color: var(--ok); }
+.feedback b.no { color: var(--bad); }
+
+/* results */
+.score { display: flex; gap: 28px; align-items: center; flex-wrap: wrap; margin: 18px 0 6px; }
+.big { font-size: 64px; font-weight: 800; line-height: 1; }
+.big small { font-size: 26px; color: var(--muted); font-weight: 700; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); border-top: 2px solid var(--ink); margin: 14px 0 22px; }
+.stat { padding: 10px 8px 10px 0; border-bottom: 1px solid var(--rule); }
+.stat b { display: block; font-size: 22px; font-weight: 800; }
+.stat span { color: var(--muted); font-size: 13px; }
+table.kinds { width: 100%; border-collapse: collapse; font-size: 15px; margin-bottom: 22px; }
+table.kinds th { text-align: left; color: var(--muted); font-weight: 600; border-bottom: 1.5px solid var(--ink); padding: 4px 8px 4px 0; }
+table.kinds td { border-bottom: 1px solid var(--rule); padding: 6px 8px 6px 0; }
+table.kinds .n { text-align: right; }
+.review { list-style: none; padding: 0; margin: 0; }
+.review li { border-top: 1px solid var(--rule); padding: 12px 0; display: grid; grid-template-columns: 34px 1fr; gap: 10px; }
+.review li > div { min-width: 0; }
+.review .no { color: var(--muted); font-weight: 700; }
+.review .q { font-weight: 600; }
+.review .a { font-size: 14.5px; margin-top: 2px; }
+.review .yours { color: var(--bad); text-decoration: line-through; }
+.review .skip { color: var(--muted); }
+.review .right { color: var(--ok); font-weight: 700; }
+.review .how { color: var(--muted); font-size: 14px; margin-top: 3px; }
+.review .tag { font-size: 12px; color: var(--accent); font-weight: 600; }
+
+@media (max-width: 720px) {
+  .cols { grid-template-columns: 1fr; }
+  .stage { padding: 14px 12px 18px; }
+  .bub { width: 46px; height: 46px; }
+  .bub svg { width: 22px; height: 22px; }
+  .bubbles { gap: 8px; }
+  .answers { gap: 8px; }
+  table.dt { font-size: 14px; min-width: 0; }
+  table.dt th, table.dt td { padding: 6px 8px; }
+  table.dt td.v { min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <section id="home" class="home">
+    <header>
+      <h1>Numerical Sprint</h1>
+      <p class="lede">Practice for the Fidelity numerical test in Aon's format: six data tabs, 18 True / False / Cannot&nbsp;say statements, 6 minutes. Every attempt builds fresh data, so you can take it as often as you like.</p>
+    </header>
+    <div class="cols">
+      <div class="panel">
+        <h2>Mode</h2>
+        <div role="radiogroup" aria-label="Mode" id="modes">
+          <button class="mode" role="radio" data-mode="timed" aria-checked="true"><i class="dot"></i><div><b>Timed test</b><span>18 statements, 6:00 on the clock, results at the end. Same as the real thing.</span></div></button>
+          <button class="mode" role="radio" data-mode="practice" aria-checked="false"><i class="dot"></i><div><b>Practice</b><span>No clock. See the working after every answer.</span></div></button>
+        </div>
+        <div class="start">
+          <button class="btn" id="startBtn">Start</button>
+          <span class="hint">Keys: <kbd>T</kbd> <kbd>F</kbd> <kbd>C</kbd> answer, <kbd>1</kbd>–<kbd>6</kbd> tabs, <kbd>←</kbd> <kbd>→</kbd> move</span>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Before every answer</h2>
+        <ol class="tips">
+          <li>Find the tab first, then the exact row and column.</li>
+          <li>Check the footnotes: surcharges are added on top.</li>
+          <li>Match chart colours to the legend, not to the order of the slices.</li>
+          <li>If a line has no labels, build it from the formula under the chart.</li>
+          <li>A period, price or reason that isn't on any tab means <b>Cannot say</b>.</li>
+          <li>Close is not equal: £27.70 is not £37.70.</li>
+        </ol>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Your sessions</h2>
+      <div id="history"></div>
+    </div>
+  </section>
+
+  <section id="test" hidden>
+    <div class="topbar">
+      <span class="ttl" id="ttl">Numerical reasoning</span>
+      <span class="clock" id="clock"></span>
+      <button class="linkbtn" id="endBtn">End test</button>
+    </div>
+    <div class="stage">
+      <div class="bubbles" role="tablist" aria-label="Data tabs" id="bubbles"></div>
+      <div class="sheet" id="sheet" role="tabpanel"></div>
+      <p class="statement" id="statement" aria-live="polite"></p>
+      <div class="answers" id="answers">
+        <button class="ans" data-a="T">✓ True</button>
+        <button class="ans" data-a="F">✕ False</button>
+        <button class="ans" data-a="C">☐ Cannot say</button>
+      </div>
+      <div id="feedback"></div>
+      <div class="nav">
+        <button class="btn ghost" id="prevBtn">← Back</button>
+        <div class="dots" id="dots"></div>
+        <button class="btn" id="nextBtn">Next →</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="results" hidden>
+    <h1>Results</h1>
+    <div class="score">
+      <div class="big" id="big"></div>
+      <p class="lede" id="verdict"></p>
+    </div>
+    <div class="stats" id="stats"></div>
+    <h2>By type of statement</h2>
+    <div class="tablewrap"><table class="kinds" id="kinds"></table></div>
+    <div class="start" style="margin: 0 0 22px">
+      <button class="btn" id="againBtn">New test</button>
+      <button class="btn ghost" id="homeBtn">Back to start</button>
+    </div>
+    <h2>Review</h2>
+    <ul class="review" id="review"></ul>
+  </section>
+</div>
+
+<script>
+/*GEN*/
+</script>
+<script>
+"use strict";
+const { makeTest, TABS, CATS, gbp, pounds } = AonGen;
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const dec = p => (p / 100).toFixed(2);
+const N = 18, SECONDS = 360;
+const ANS = { T: "True", F: "False", C: "Cannot say" };
+const KIND = { "lookup": "One lookup", "two-step": "Two-step sums", "three-step": "Three-step sums", "comparison": "Comparisons", "cannot say": "Cannot say" };
+
+const ICONS = {
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+  profit: '<ellipse cx="10" cy="6" rx="6" ry="2.5"/><path d="M4 6v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V6M4 10v4c0 1.4 2.7 2.5 6 2.5M4 14v4c0 1.4 2.7 2.5 6 2.5"/><ellipse cx="16" cy="14" rx="5" ry="2"/><path d="M11 14v4c0 1.1 2.2 2 5 2s5-.9 5-2v-4"/>',
+  price: '<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.5"/>',
+  exp: '<circle cx="12" cy="12" r="9"/><path d="M15 8.5c-.6-1-1.7-1.5-3-1.5-1.8 0-3 .9-3 2.3 0 3.2 6.2 1.7 6.2 5 0 1.4-1.3 2.4-3.2 2.4-1.5 0-2.7-.6-3.3-1.7M12 5.5v1.5M12 17v1.5"/>',
+  hours: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  emp: '<rect x="2.5" y="4.5" width="19" height="15" rx="2"/><circle cx="8.5" cy="10.5" r="2.2"/><path d="M5 16c.6-1.7 2-2.5 3.5-2.5s2.9.8 3.5 2.5M14 9h5M14 12h5M14 15h3"/>',
+};
+const icon = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]}</svg>`;
+
+let S = { mode: "timed", test: null, cur: 0, tab: "mail", answers: [], checked: [], start: 0, end: 0, timer: null, done: false };
+try { const m = localStorage.getItem("ns-mode"); if (m === "timed" || m === "practice") S.mode = m; } catch (e) {}
+
+/* ---------- data sheets ---------- */
+function sheetMail(P) {
+  const m = P.mail;
+  const rows = m.bands.map((b, i) => `<tr><td>${b[0]} - ${b[1]} kg</td><td class="v">${dec(m.nat[i])}</td><td class="v">${dec(m.intl[i])}</td></tr>`).join("");
+  const ex = m.svc.map((s, i) => `<tr><td>${esc(s)}</td><td class="v">${dec(m.exp[i])}</td></tr>`).join("");
+  return `<div class="sheettitle">Mail order</div><div class="sub">Delivery costs for parcels</div>
+  <div class="tablewrap"><table class="dt"><tr><th></th><th colspan="2">Price (in pounds)</th></tr><tr><th>Weight</th><th>National</th><th>Int'l delivery surcharge <sup>(1)</sup></th></tr>${rows}</table></div>
+  <div class="sub">Express delivery surcharge <sup>(2)</sup></div>
+  <div class="tablewrap"><table class="dt"><tr><th>Service</th><th>Price (in pounds)</th></tr>${ex}</table></div>
+  <p class="foot"><sup>(1)</sup> additional charge on top of the price for national delivery<br><sup>(2)</sup> additional charge on top of the delivery price</p>`;
+}
+function sheetProfit(P) {
+  const pr = P.profit, cx = 170, cy = 150, r = 98, cols = ["var(--c-navy)", "var(--c-blue)", "var(--c-sky)", "var(--c-orange)"];
+  // slices clockwise from the top in a fixed but non-legend order, so colours must be matched to the legend
+  const order = [3, 0, 2, 1];
+  let a0 = -Math.PI / 2, arcs = "", labels = "";
+  for (const i of order) {
+    const a1 = a0 + (pr.shares[i] / 100) * 2 * Math.PI, big = a1 - a0 > Math.PI ? 1 : 0;
+    const p = a => [cx + r * Math.cos(a), cy + r * Math.sin(a)].map(v => v.toFixed(1)).join(" ");
+    arcs += `<path d="M ${p(a0)} A ${r} ${r} 0 ${big} 1 ${p(a1)}" fill="none" stroke="${cols[i]}" stroke-width="26"/>`;
+    const am = (a0 + a1) / 2, lx = cx + (r + 40) * Math.cos(am), ly = cy + (r + 40) * Math.sin(am) + 6;
+    labels += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" font-size="19" font-weight="600">${pr.shares[i]}%</text>`;
+    a0 = a1;
+  }
+  const leg = pr.units.map((u, i) => `<span style="color:${cols[i]}"><i></i><span style="color:var(--ink)">${esc(u)}</span></span>`).join("");
+  return `<div class="sheettitle">Profit</div><div class="sub" style="font-family:var(--f-chart);font-size:18px">Profit share of the four ${pr.units[0].startsWith("Factory") ? "factories" : pr.units[0].startsWith("Plant") ? "plants" : "sites"} in ${pr.month}</div>
+  <svg class="chart donut" viewBox="0 0 340 300" role="img" aria-label="Donut chart of profit shares">${arcs}${labels}</svg>
+  <p class="caption">Total profit in ${pr.month}: ${pounds(pr.total)}</p><div class="legend">${leg}</div>`;
+}
+function sheetPrice(P) {
+  const pl = P.price;
+  const rows = pl.items.map((it, i) => `<tr><td>${esc(it.name)}</td><td class="v">${dec(pl.p[i][0])}</td><td class="v">${dec(pl.p[i][1])}</td></tr>`).join("");
+  return `<div class="sheettitle">Price list</div><div class="tablewrap" style="margin-top:8px"><table class="dt"><tr><th></th><th colspan="2">Price (in pounds)</th></tr><tr><th>Item</th><th>'${esc(pl.models[0])}' model</th><th>'${esc(pl.models[1])}' model</th></tr>${rows}</table></div>`;
+}
+function sheetExp(P) {
+  const e = P.exp, X0 = 70, X1 = 540, Y0 = 250, Y1 = 22, max = e.axisMax;
+  const x = i => X0 + (i * (X1 - X0)) / 5, y = v => Y0 - (v / 100 / max) * (Y0 - Y1);
+  let g = "";
+  for (let t = 0; t <= max; t += 5) g += `<line class="grid" x1="${X0 - 10}" y1="${y(t * 100)}" x2="${X1 + 10}" y2="${y(t * 100)}"/><text class="ax" x="${X0 - 18}" y="${y(t * 100) + 4}" text-anchor="end">${t}</text>`;
+  e.qty.forEach((q, i) => { g += `<text class="ax" x="${x(i)}" y="${Y0 + 22}" text-anchor="middle">${q}</text>`; });
+  const line = (vals, col, lab) => {
+    const pts = vals.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+    let s = `<polyline points="${pts}" fill="none" stroke="${col}" stroke-width="2.5"/>`;
+    vals.forEach((v, i) => { s += `<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="5.5" fill="${col}" stroke="var(--sheet)" stroke-width="1.5"/>`; });
+    if (lab) vals.forEach((v, i) => { const dy = lab(i); s += `<text x="${x(i).toFixed(1)}" y="${(y(v) + dy).toFixed(1)}" text-anchor="middle" font-size="16">${dec(v)}</text>`; });
+    return s;
+  };
+  const c = e.vc.map(v => v + e.fc), fc = e.qty.map(() => e.fc);
+  // Label placement: put each label where there is room. Returns the y offset from the point (negative = above).
+  const UP = -12, DOWN = 22;
+  const fcLab = i => {
+    const gapC = y(e.fc) - y(c[i]), gapV = y(e.vc[i]) - y(e.fc);           // px to the c point above, to the vc point below
+    if (e.vc[i] > e.fc) return DOWN;                                        // vc is above fc: room below
+    if (gapC >= 30) return UP;
+    return gapV >= 40 ? DOWN : UP - (30 - gapC);                            // squeeze: lift it clear of the c point
+  };
+  const vcLab = i => (e.vc[i] > e.fc ? UP : DOWN);                       // above vc when vc is the higher line (c is >= 5 units higher), else below
+  const body = g + line(c, "var(--c-orange)") + line(fc, "var(--c-navy)", fcLab) + line(e.vc, "var(--c-sky)", vcLab);
+  return `<div class="sheettitle">Expenses</div>
+  <svg class="chart" viewBox="0 0 560 300" role="img" aria-label="Line chart of unit costs by quantity">${body}
+  <text class="ax" x="${(X0 + X1) / 2}" y="296" text-anchor="middle" font-size="15">Quantity</text>
+  <text class="ax" transform="translate(16 ${(Y0 + Y1) / 2}) rotate(-90)" text-anchor="middle" font-size="14">Unit cost (in pounds)</text></svg>
+  <div class="legend"><span style="color:var(--c-orange)"><i></i><span style="color:var(--ink)">c</span></span><span style="color:var(--c-navy)"><i></i><span style="color:var(--ink)">fc</span></span><span style="color:var(--c-sky)"><i></i><span style="color:var(--ink)">vc</span></span></div>
+  <p class="caption">Total costs per unit (c) = fixed costs (fc) + variable costs (vc)</p>`;
+}
+function sheetHours(P) {
+  const h = P.hours;
+  const rows = h.staff.map((s, i) => `<tr><td>${esc(s[1])}</td><td class="v">${h.agreed[i]}</td><td class="v">${h.actual[i]}</td></tr>`).join("");
+  return `<div class="sheettitle">Working hours</div><div class="sub">Working hours for HR department employees in ${h.month}</div>
+  <div class="tablewrap"><table class="dt"><tr><th>Employee</th><th>Agreed working hours</th><th>Actual working hours</th></tr>${rows}</table></div>
+  <p class="foot">Less than normal working hours = agreed hours − actual hours<br>Overtime = actual hours − agreed hours</p>`;
+}
+function sheetEmp(P) {
+  const e = P.emp, X0 = 70, X1 = 545, Y0 = 250, Y1 = 22, max = e.axisMax, cols = ["var(--c-orange)", "var(--c-sky)", "var(--c-blue)", "var(--c-navy)"];
+  const y = v => Y0 - (v / max) * (Y0 - Y1), gw = (X1 - X0) / 4, bw = 15;
+  let s = "";
+  for (let t = 0; t <= max; t += 10) s += `<line class="grid" x1="${X0}" y1="${y(t)}" x2="${X1}" y2="${y(t)}"/><text class="ax" x="${X0 - 12}" y="${y(t) + 4}" text-anchor="end">${t}</text>`;
+  e.years.forEach((yr, j) => {
+    const vals = [e.cats[0][j], e.cats[1][j], e.cats[2][j], e.total[j]];
+    vals.forEach((v, k) => {
+      const bx = X0 + j * gw + gw / 2 + (k - 2) * (bw + 9) + 4;
+      s += `<rect x="${bx.toFixed(1)}" y="${y(v).toFixed(1)}" width="${bw}" height="${(Y0 - y(v)).toFixed(1)}" rx="4" fill="${cols[k]}"/>`;
+      s += `<text x="${(bx + bw / 2).toFixed(1)}" y="${(y(v) - 7).toFixed(1)}" text-anchor="middle" font-size="16">${v}</text>`;
+    });
+    s += `<text class="ax" x="${(X0 + j * gw + gw / 2).toFixed(1)}" y="${Y0 + 22}" text-anchor="middle" font-size="15">${yr}</text>`;
+  });
+  const names = CATS.map(c => c.label).concat("Total");
+  return `<div class="sheettitle">Employees</div>
+  <svg class="chart" viewBox="0 0 560 300" role="img" aria-label="Bar chart of employees by financial year">${s}
+  <text class="ax" x="${(X0 + X1) / 2}" y="296" text-anchor="middle" font-size="15">Financial year</text>
+  <text class="ax" transform="translate(16 ${(Y0 + Y1) / 2}) rotate(-90)" text-anchor="middle" font-size="14">Number of employees</text></svg>
+  <div class="legend">${names.map((n, k) => `<span style="color:${cols[k]}"><i></i><span style="color:var(--ink)">${n}</span></span>`).join("")}</div>`;
+}
+const SHEETS = { mail: sheetMail, profit: sheetProfit, price: sheetPrice, exp: sheetExp, hours: sheetHours, emp: sheetEmp };
+
+/* ---------- test flow ---------- */
+function show(id) { for (const s of ["home", "test", "results"]) $(s).hidden = s !== id; window.scrollTo(0, 0); }
+
+function startTest() {
+  const seed = (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
+  S.test = makeTest(seed, N);
+  S.cur = 0; S.tab = "mail"; S.answers = Array(N).fill(null); S.checked = Array(N).fill(false);
+  S.start = Date.now(); S.end = 0; S.done = false;
+  $("ttl").textContent = S.mode === "timed" ? "Numerical reasoning · timed test" : "Numerical reasoning · practice";
+  clearInterval(S.timer);
+  if (S.mode === "timed") { S.timer = setInterval(tick, 250); tick(); } else $("clock").textContent = "";
+  show("test");
+  renderTest();
+}
+function tick() {
+  const left = Math.max(0, SECONDS - Math.floor((Date.now() - S.start) / 1000));
+  $("clock").textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
+  $("clock").classList.toggle("low", left <= 60);
+  if (left === 0) finish();
+}
+function renderTabs() {
+  $("bubbles").innerHTML = TABS.map((t, i) => `<button class="bub" role="tab" aria-selected="${t.key === S.tab}" title="${t.title} (${i + 1})" aria-label="${t.title}" data-tab="${t.key}">${icon(t.key)}</button>`).join("");
+  $("sheet").innerHTML = SHEETS[S.tab](S.test.pack);
+}
+function renderTest() {
+  const it = S.test.items[S.cur], a = S.answers[S.cur], checked = S.checked[S.cur];
+  renderTabs();
+  $("statement").textContent = it.text;
+  for (const b of document.querySelectorAll(".ans")) {
+    const k = b.dataset.a;
+    b.setAttribute("aria-pressed", String(a === k && !checked));
+    b.classList.toggle("right", checked && k === it.answer);
+    b.classList.toggle("wrong", checked && k === a && a !== it.answer);
+    b.disabled = checked;
+  }
+  $("feedback").innerHTML = checked
+    ? `<div class="feedback"><b class="${a === it.answer ? "ok" : "no"}">${a === it.answer ? "Correct" : "Not quite"}: ${ANS[it.answer]}.</b> ${esc(it.expl)}</div>` : "";
+  $("dots").innerHTML = S.test.items.map((_, i) => `<button class="${S.answers[i] ? "done" : ""}${i === S.cur ? " cur" : ""}" data-i="${i}" aria-label="Statement ${i + 1}">${i + 1}</button>`).join("");
+  $("prevBtn").disabled = S.cur === 0;
+  $("nextBtn").textContent = S.cur === N - 1 ? "Finish" : "Next →";
+}
+function answer(k) {
+  if (S.done || S.checked[S.cur]) return;
+  S.answers[S.cur] = k;
+  if (S.mode === "practice") { S.checked[S.cur] = true; renderTest(); return; }
+  renderTest();
+  if (S.cur < N - 1) setTimeout(() => { if (!S.done) { S.cur++; renderTest(); } }, 180);
+}
+function go(d) {
+  if (S.cur === N - 1 && d > 0) return finish();
+  S.cur = Math.max(0, Math.min(N - 1, S.cur + d)); renderTest();
+}
+function finish() {
+  if (S.done) return;
+  S.done = true; S.end = Date.now(); clearInterval(S.timer);
+  const items = S.test.items, right = items.filter((it, i) => S.answers[i] === it.answer).length;
+  const secs = Math.min(S.mode === "timed" ? SECONDS : 1e9, Math.round((S.end - S.start) / 1000));
+  const blank = S.answers.filter(a => !a).length;
+  $("big").innerHTML = `${right}<small> / ${N}</small>`;
+  $("verdict").textContent = right >= 15 ? "Strong. Keep the pace and keep checking footnotes." : right >= 11 ? "Solid. Look at the misses below: most are traps you can learn." : "Read the working for each miss, then try practice mode on the same kinds.";
+  const conf = {};
+  items.forEach((it, i) => { const a = S.answers[i]; if (a && a !== it.answer) { const k = `${ANS[a]} instead of ${ANS[it.answer]}`; conf[k] = (conf[k] || 0) + 1; } });
+  const topConf = Object.entries(conf).sort((a, b) => b[1] - a[1])[0];
+  $("stats").innerHTML = [
+    [`${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}`, "time used"],
+    [`${N - blank}`, "answered"],
+    [`${blank}`, "left blank"],
+    [topConf ? `${topConf[1]}×` : "–", topConf ? topConf[0] : "no repeated mix-up"],
+  ].map(([b, s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join("");
+  const kinds = {};
+  items.forEach((it, i) => { const k = kinds[it.kind] || (kinds[it.kind] = [0, 0]); k[1]++; if (S.answers[i] === it.answer) k[0]++; });
+  $("kinds").innerHTML = `<tr><th>Type</th><th class="n">Right</th><th class="n">Of</th></tr>` +
+    Object.keys(KIND).filter(k => kinds[k]).map(k => `<tr><td>${KIND[k]}</td><td class="n">${kinds[k][0]}</td><td class="n">${kinds[k][1]}</td></tr>`).join("");
+  $("review").innerHTML = items.map((it, i) => {
+    const a = S.answers[i], ok = a === it.answer, tab = TABS.find(t => t.key === it.tab).title;
+    const yours = !a ? `<span class="skip">No answer.</span> ` : ok ? "" : `<span class="yours">${ANS[a]}</span> `;
+    return `<li><span class="no">${i + 1}</span><div><div class="tag">${tab} · ${KIND[it.kind]}</div><div class="q">${esc(it.text)}</div><div class="a">${yours}<span class="right">${ANS[it.answer]}</span></div><div class="how">${esc(it.expl)}</div></div></li>`;
+  }).join("");
+  try {
+    const h = JSON.parse(localStorage.getItem("ns-history") || "[]");
+    h.unshift({ d: new Date().toISOString().slice(0, 16).replace("T", " "), mode: S.mode, right, secs });
+    localStorage.setItem("ns-history", JSON.stringify(h.slice(0, 30)));
+  } catch (e) {}
+  show("results");
+}
+function renderHistory() {
+  let h = [];
+  try { h = JSON.parse(localStorage.getItem("ns-history") || "[]"); } catch (e) {}
+  $("history").innerHTML = h.length
+    ? `<div class="tablewrap"><table class="hist"><tr><th>When</th><th>Mode</th><th>Score</th><th>Time</th></tr>${h.slice(0, 10).map(r => `<tr><td>${esc(r.d)}</td><td>${r.mode === "timed" ? "Timed" : "Practice"}</td><td>${r.right} / ${N}</td><td>${Math.floor(r.secs / 60)}:${String(r.secs % 60).padStart(2, "0")}</td></tr>`).join("")}</table></div>`
+    : `<p class="empty">No sessions yet. Your scores will appear here, saved in this browser only.</p>`;
+}
+
+/* ---------- events ---------- */
+$("modes").addEventListener("click", e => {
+  const b = e.target.closest(".mode"); if (!b) return;
+  S.mode = b.dataset.mode;
+  for (const x of document.querySelectorAll(".mode")) x.setAttribute("aria-checked", String(x === b));
+  try { localStorage.setItem("ns-mode", S.mode); } catch (err) {}
+});
+for (const x of document.querySelectorAll(".mode")) x.setAttribute("aria-checked", String(x.dataset.mode === S.mode));
+$("startBtn").onclick = startTest;
+$("againBtn").onclick = startTest;
+$("homeBtn").onclick = () => { renderHistory(); show("home"); };
+$("endBtn").onclick = finish;
+$("prevBtn").onclick = () => go(-1);
+$("nextBtn").onclick = () => go(1);
+$("answers").addEventListener("click", e => { const b = e.target.closest(".ans"); if (b) answer(b.dataset.a); });
+$("bubbles").addEventListener("click", e => { const b = e.target.closest(".bub"); if (b) { S.tab = b.dataset.tab; renderTabs(); } });
+$("dots").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { S.cur = +b.dataset.i; renderTest(); } });
+document.addEventListener("keydown", e => {
+  if ($("test").hidden || e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (k === "t" || k === "f" || k === "c") answer(k.toUpperCase());
+  else if (k >= "1" && k <= "6") { S.tab = TABS[+k - 1].key; renderTabs(); }
+  else if (e.key === "ArrowRight") go(1);
+  else if (e.key === "ArrowLeft") go(-1);
+});
+renderHistory();
+</script>
