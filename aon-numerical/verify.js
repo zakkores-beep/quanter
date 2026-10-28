@@ -22,7 +22,7 @@ function val(P, ref) {
   if (tab === "price") return P.price.p[a][b];
   if (tab === "exp") return a === "fc" ? P.exp.fc : P.exp.vc[b];
   if (tab === "hours") return P.hours[a][b];
-  if (tab === "emp") return P.emp.cats[a][b];
+  if (tab === "emp") return a === "total" ? P.emp.cats.reduce((s, c) => s + c[b], 0) : P.emp.cats[a][b];
   throw new Error("unknown ref " + ref);
 }
 const sum = (P, terms) => terms.reduce((s, t) => s + t.mul * val(P, t.ref), 0);
@@ -33,7 +33,7 @@ function namesFor(P, ref) {
   if (tab === "profit") return [P.profit.units[a]];
   if (tab === "price") return [P.price.models[b]];
   if (tab === "hours") return [P.hours.staff[b][1]];
-  if (tab === "emp") return [G.CATS[a].noun, "financial year " + P.emp.years[b]];
+  if (tab === "emp") return a === "total" ? ["financial year " + P.emp.years[b]] : [G.CATS[a].noun, "financial year " + P.emp.years[b]];
   if (tab === "exp") return a === "vc" ? [P.exp.qty[b] + " units"] : [];
   return [];
 }
@@ -46,6 +46,10 @@ function answerOf(P, st) {
     return { ">": L > R, "<": L < R, "==": L === R }[c.op] ? "T" : "F";
   }
   if (c.t === "overtimeSum") return P.hours.actual.reduce((s, a, i) => s + Math.max(0, a - P.hours.agreed[i]), 0) === c.r ? "T" : "F";
+  if (c.t === "pairOvertime") {
+    const ot = i => Math.max(0, P.hours.actual[i] - P.hours.agreed[i]);
+    return ot(c.emp) + ot(c.emp2) === c.r ? "T" : "F";
+  }
   if (c.t === "rise") return P.emp.cats[c.cat].every((v, i, a) => i === 0 || v > a[i - 1]) ? "T" : "F";
   if (c.t === "cs") {
     // A Cannot-say claim must point at information the pack really does not hold.
@@ -72,24 +76,35 @@ function textErrors(P, st) {
   const c = st.claim, x = st.text, errs = [];
   if (/(?:^A|\sa) (?:[aeiou]|8|11 |18 )/.test(x)) errs.push("article: a/an");
   if (/(?:^An|\san) (?![aeiou]|8|11 |18 )/.test(x)) errs.push("article: an before consonant");
+  if (c.t === "pairOvertime") {
+    for (const i of [c.emp, c.emp2]) if (!x.includes(P.hours.staff[i][1])) errs.push("missing name");
+    if (!x.includes(" " + c.r + " hours") || !x.includes(c.month)) errs.push("value/month missing");
+  }
   if (c.t !== "cmp") return errs;
-  if (typeof c.r === "number" && !x.includes(FMT[c.fmt](c.r))) errs.push("value " + FMT[c.fmt](c.r) + " not in text");
+  const shown = c.rShown !== undefined ? c.rShown : c.r;
+  if (typeof c.r === "number" && !x.includes(FMT[c.fmt](shown))) errs.push("value " + FMT[c.fmt](shown) + " not in text");
+  if (c.pct !== undefined && !x.includes(c.pct + "%")) errs.push("percentage missing");
   const refs = c.l.concat(typeof c.r === "number" ? [] : c.r).map(t => t.ref);
   for (const ref of refs) for (const nm of namesFor(P, ref)) if (!x.includes(nm)) errs.push("missing name " + nm);
   if (st.tab === "price") for (const ref of refs) { const it = P.price.items[ref[1]]; if (!x.includes(it.one) && !x.includes(it.many)) errs.push("missing item " + it.one); }
   if (c.w !== undefined) {
     if (!x.includes(c.w + " kilo")) errs.push("weight not in text");
-    const band = P.mail.bands.findIndex(([lo, hi]) => c.w >= lo && c.w <= hi);
-    for (const ref of refs) if (ref[0] === "mail" && ref[1] !== "exp" && ref[2] !== band) errs.push("weight " + c.w + " used the wrong band");
+    const bandOf = w => P.mail.bands.findIndex(([lo, hi]) => w >= lo && w <= hi);
+    const okBands = [bandOf(c.w)].concat(c.w2 !== undefined ? [bandOf(c.w2)] : []);
+    if (c.w2 !== undefined && !x.includes(c.w2 + " kilo")) errs.push("second weight not in text");
+    for (const ref of refs) if (ref[0] === "mail" && ref[1] !== "exp" && !okBands.includes(ref[2])) errs.push("weight used the wrong band");
+    if (c.w2 !== undefined && refs.filter(r => r[1] === "nat").map(r => r[2]).sort().join() !== okBands.slice().sort().join()) errs.push("two-parcel bands");
     const intl = refs.some(r => r[1] === "intl");
-    if (intl !== /^International/.test(x)) errs.push("national/international mismatch");
+    if (c.pct === undefined && intl !== /^International/.test(x)) errs.push("national/international mismatch");
+    if (c.pct !== undefined && !/international surcharge/.test(x)) errs.push("surcharge wording");
     for (const ref of refs) if (ref[1] === "exp" && !x.includes("'" + P.mail.svc[ref[2]] + "'")) errs.push("service name missing");
   }
   if (c.q !== undefined && !x.includes(P.exp.qty[c.q] + " units")) errs.push("quantity missing");
   if (st.tab === "exp") {
     const words = { fc: /fixed cost/, vc: /variable cost/ };
     const kinds = refs.map(r => r[1]);
-    if (kinds.includes("fc") && kinds.includes("vc") && c.op === "==" && !/total cost/.test(x)) errs.push("fc+vc should be total cost");
+    if (kinds.includes("fc") && kinds.includes("vc") && c.op === "==" && !/total/.test(x)) errs.push("fc+vc should be a total");
+    if (c.q2 !== undefined && (!x.includes(P.exp.qty[c.q2] + " units") || !/total cost per unit falls/.test(x))) errs.push("fall wording");
     if (kinds.length === 1 && !words[kinds[0]].test(x)) errs.push("cost type wording");
   }
   if (c.month && !x.includes(c.month)) errs.push("month missing");
@@ -103,7 +118,7 @@ function textErrors(P, st) {
   // Comparison words match the operator.
   if (c.op === ">" && !/(more|higher)/.test(x)) errs.push("'>' without more/higher");
   if (c.op === "<" && !/(less|fewer)/.test(x)) errs.push("'<' without less/fewer");
-  if (c.op === "==" && /(more than|fewer than|less than|higher than)/.test(x) && st.template !== "price-difference") errs.push("'==' with a comparison word");
+  if (c.op === "==" && /(more than|fewer than|less than|higher than)/.test(x) && st.template !== "price-difference" && !c.diff) errs.push("'==' with a comparison word");
   return errs;
 }
 

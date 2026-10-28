@@ -1,4 +1,4 @@
-<title>Numerical Sprint</title>
+<title>Aon Sprint</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -51,6 +51,11 @@ kbd { font-family: var(--f-ui); font-size: 12px; border: 1px solid var(--rule); 
 .mode span { color: var(--muted); font-size: 14px; }
 .dot { flex: 0 0 auto; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--muted); margin-top: 3px; }
 .mode[aria-checked="true"] .dot { border-color: var(--accent); box-shadow: inset 0 0 0 4px var(--sheet); background: var(--accent); }
+.seg { display: inline-flex; border: 1.5px solid var(--rule); border-radius: 8px; padding: 3px; gap: 3px; }
+.segbtn { border: 0; background: none; border-radius: 6px; padding: 7px 18px; font-weight: 700; cursor: pointer; color: var(--muted); }
+.segbtn[aria-checked="true"] { background: var(--ink); color: var(--sheet); }
+.vsheet { display: grid; gap: 12px; max-width: 78ch; margin: 6px auto 0; font-size: 16px; line-height: 1.6; }
+.vsheet p { margin: 0; }
 .start { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-top: 16px; }
 ol.tips { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 15px; }
 table.hist { width: 100%; border-collapse: collapse; font-size: 14px; }
@@ -144,12 +149,17 @@ table.kinds .n { text-align: right; }
 <div class="wrap">
   <section id="home" class="home">
     <header>
-      <h1>Numerical Sprint</h1>
-      <p class="lede">Practice for the Fidelity numerical test in Aon's format: six data tabs, 18 True / False / Cannot&nbsp;say statements, 6 minutes. Every attempt builds fresh data, so you can take it as often as you like.</p>
+      <h1>Aon Sprint</h1>
+      <p class="lede">Practice for the Fidelity numerical and verbal tests in Aon's format: six tabs, 18 True / False / Cannot&nbsp;say statements, 6 minutes. Every attempt builds fresh data, so you can take it as often as you like.</p>
     </header>
     <div class="cols">
       <div class="panel">
-        <h2>Mode</h2>
+        <h2>Section</h2>
+        <div role="radiogroup" aria-label="Section" id="sections" class="seg">
+          <button class="segbtn" role="radio" data-sec="num" aria-checked="true">Numerical</button>
+          <button class="segbtn" role="radio" data-sec="verb" aria-checked="false">Verbal</button>
+        </div>
+        <h2 style="margin-top:18px">Mode</h2>
         <div role="radiogroup" aria-label="Mode" id="modes">
           <button class="mode" role="radio" data-mode="timed" aria-checked="true"><i class="dot"></i><div><b>Timed test</b><span>18 statements, 6:00 on the clock, results at the end. Same as the real thing.</span></div></button>
           <button class="mode" role="radio" data-mode="practice" aria-checked="false"><i class="dot"></i><div><b>Practice</b><span>No clock. See the working after every answer.</span></div></button>
@@ -161,13 +171,21 @@ table.kinds .n { text-align: right; }
       </div>
       <div class="panel">
         <h2>Before every answer</h2>
-        <ol class="tips">
+        <ol class="tips" id="tipsNum">
           <li>Find the tab first, then the exact row and column.</li>
-          <li>Check the footnotes: surcharges are added on top.</li>
+          <li>Check the footnotes: surcharges are added on top, once per parcel.</li>
           <li>Match chart colours to the legend, not to the order of the slices.</li>
           <li>If a line has no labels, build it from the formula under the chart.</li>
           <li>A period, price or reason that isn't on any tab means <b>Cannot say</b>.</li>
           <li>Close is not equal: £27.70 is not £37.70.</li>
+        </ol>
+        <ol class="tips" id="tipsVerb" hidden>
+          <li>Find the sentence the statement is built on, then compare word by word.</li>
+          <li>A swapped detail (role, body, country, number) makes it <b>False</b>.</li>
+          <li>"Only", "all", "always" against a text that lists more options: <b>False</b>.</li>
+          <li>A real topic plus a detail no tab mentions (a time frame, a purpose, a country): <b>Cannot say</b>.</li>
+          <li>Rules go one way: "where options, also real estate funds" does not work in reverse.</li>
+          <li>Two-part statements need both halves true.</li>
         </ol>
       </div>
     </div>
@@ -340,14 +358,14 @@ function makePack(g) {
 // Pick a false value: a "trap" decoy (a real number from the wrong cell) or a near miss.
 function falseVal(g, v, decoys, nears) {
   const ds = decoys.filter(d => d !== v && d > 0);
-  if (ds.length && g.chance(0.55)) return g.pick(ds);
+  if (ds.length && g.chance(0.8)) return g.pick(ds);
   for (let i = 0; i < 20; i++) { const x = v + g.pick([-1, 1]) * g.pick(nears); if (x > 0 && x !== v) return x; }
   return v + nears[0];
 }
 const T = (ref, mul) => ({ ref, mul: mul || 1 });
 function S(tab, kind, text, answer, claim, expl) { return { tab, kind, text, answer, claim, expl }; }
 function bandIdx(P, w) { return P.mail.bands.findIndex(([lo, hi]) => w >= lo && w <= hi); }
-function weightIn(g, P, b) { const [lo, hi] = P.mail.bands[b]; return g.int(lo, hi); }
+function weightIn(g, P, b) { const [lo, hi] = P.mail.bands[b]; return g.chance(0.5) ? g.pick([lo, hi, Math.min(hi, lo + 1), Math.max(lo, hi - 1)]) : g.int(lo, hi); }
 const bandTxt = (P, b) => `${P.mail.bands[b][0]}–${P.mail.bands[b][1]} kg`;
 const otherMonth = (g, m) => g.pick(MONTHS.filter(x => x !== m));
 const poss = t => (t === "Ms" ? "her" : "his");
@@ -635,6 +653,137 @@ const TEMPLATES = {
   ],
 };
 
+
+/* ---------- extra templates: more multi-step traps in the mock's style, plus a few percentages ---------- */
+const pctTxt = p => p + "%";
+// Pick a whole-number percentage threshold at least 2 points away from the true value, on the side `want` needs.
+function pctThreshold(g, truePct, want, more) {
+  const above = Math.ceil(truePct + 2 + g.int(0, 6)), below = Math.floor(truePct - 2 - g.int(0, 6));
+  const x = (want === "T") === more ? below : above;
+  return x > 0 && x < 100 ? x : null;
+}
+TEMPLATES.mail.push(
+  { id: "mail-two-parcels", kind: "three-step", hard: true, f(g, P, want) {
+    const b1 = g.int(0, 2), b2 = g.int(0, 2), s = g.int(0, 2), w1 = weightIn(g, P, b1), w2 = weightIn(g, P, b2), m = P.mail;
+    if (w1 === w2) return null;
+    const v = m.nat[b1] + m.nat[b2] + 2 * m.exp[s];
+    const x = want === "T" ? v : falseVal(g, v, [m.nat[b1] + m.nat[b2] + m.exp[s], 2 * m.nat[b1] + 2 * m.exp[s]], [10, 50, 100]);
+    return S("mail", "three-step", `Sending ${art(w1)} kilo parcel and ${art(w2)} kilo parcel nationally, both with the '${m.svc[s]}' service, costs ${gbp(x)} in total.`, x === v ? "T" : "F",
+      { t: "cmp", w: w1, w2, svc: s, l: [T(["mail", "nat", b1]), T(["mail", "nat", b2]), T(["mail", "exp", s], 2)], op: "==", r: x, fmt: "gbp" },
+      `${gbp(m.nat[b1])} + ${gbp(m.nat[b2])} + 2 × ${gbp(m.exp[s])} (the surcharge applies to each parcel) = ${gbp(v)}.`);
+  } },
+  { id: "mail-surcharge-pct", kind: "percentage", hard: true, f(g, P, want) {
+    const b = g.int(0, 2), w = weightIn(g, P, b), m = P.mail, more = g.chance(0.5);
+    const p = (100 * m.intl[b]) / m.nat[b], X = pctThreshold(g, p, want, more);
+    if (X === null) return null;
+    const ok = more ? p > X : p < X;
+    return S("mail", "percentage", `For ${art(w)} kilo parcel, the international surcharge is ${more ? "more" : "less"} than ${pctTxt(X)} of the national price.`, ok ? "T" : "F",
+      { t: "cmp", w, pct: X, l: [T(["mail", "intl", b], 100)], op: more ? ">" : "<", r: [T(["mail", "nat", b], X)] },
+      `${gbp(m.intl[b])} ÷ ${gbp(m.nat[b])} = ${p.toFixed(1)}% of the national price.`);
+  } },
+);
+TEMPLATES.profit.push(
+  { id: "profit-difference", kind: "two-step", hard: true, f(g, P, want) {
+    const pr = P.profit, [i, j] = g.shuffle([0, 1, 2, 3]).slice(0, 2);
+    if (pr.shares[i] <= pr.shares[j]) return null;
+    const v = (pr.shares[i] - pr.shares[j]) * pr.total / 100;
+    const x = want === "T" ? v : falseVal(g, v, [pr.shares[j] * pr.total / 100, (pr.shares[i] - pr.shares[j]) * pr.total / 1000], [pr.total / 20, pr.total / 10]);
+    return S("profit", "two-step", `In ${pr.month}, ${pr.units[i]} generated ${pounds(x)} more profit than ${pr.units[j]}.`, x === v ? "T" : "F",
+      { t: "cmp", unit: i, unit2: j, month: pr.month, diff: true, l: [T(["profit", i]), T(["profit", j], -1)], op: "==", r: x, fmt: "pounds" },
+      `(${pr.shares[i]}% − ${pr.shares[j]}%) × ${pounds(pr.total)} = ${pounds(v)}.`);
+  } },
+  { id: "profit-what-if", kind: "three-step", hard: true, f(g, P, want) {
+    const pr = P.profit, i = g.int(0, 3), up = g.pick([10, 20, 25]), v = pr.shares[i] * pr.total * (100 + up) / 10000;
+    if (!Number.isInteger(v)) return null;
+    const plain = pr.shares[i] * pr.total / 100;
+    const x = want === "T" ? v : falseVal(g, v, [plain, plain + pr.total * up / 100, v * 1 + pr.total / 100], [pr.total / 20]);
+    if (!Number.isInteger(x)) return null;
+    return S("profit", "three-step", `If total profit in ${pr.month} had been ${pctTxt(up)} higher with the same shares, ${pr.units[i]} would have generated ${pounds(x)}.`, x === v ? "T" : "F",
+      { t: "cmp", unit: i, month: pr.month, pct: up, l: [T(["profit", i], 100 + up)], op: "==", r: x * 100, fmt: "pounds", rShown: x },
+      `${pounds(pr.total)} × ${(100 + up) / 100} = ${pounds(pr.total * (100 + up) / 100)}, and ${pr.shares[i]}% of that is ${pounds(v)}.`);
+  } },
+);
+TEMPLATES.price.push(
+  { id: "price-basket", kind: "three-step", hard: true, f(g, P, want) {
+    const pl = P.price, [i, j] = g.shuffle([0, 1, 2, 3, 4, 5]).slice(0, 2), m = g.int(0, 1), n = g.int(2, 4);
+    const v = pl.p[i][m] + n * pl.p[j][m];
+    const x = want === "T" ? v : falseVal(g, v, [pl.p[i][1 - m] + n * pl.p[j][1 - m], pl.p[i][m] + (n - 1) * pl.p[j][m], pl.p[i][m] + n * pl.p[j][1 - m]], [100, 200, 1000]);
+    return S("price", "three-step", `One ${pl.items[i].one} and ${word(n)} ${pl.items[j].many} for the '${pl.models[m]}' model cost ${gbp(x)} in total.`, x === v ? "T" : "F",
+      { t: "cmp", item: i, item2: j, model: m, n, l: [T(["price", i, m]), T(["price", j, m], n)], op: "==", r: x, fmt: "gbp" },
+      `${gbp(pl.p[i][m])} + ${n} × ${gbp(pl.p[j][m])} = ${gbp(v)}.`);
+  } },
+  { id: "price-pct-dearer", kind: "percentage", hard: true, f(g, P, want) {
+    const pl = P.price, i = g.int(0, 5), m = g.int(0, 1), a = pl.p[i][m], b = pl.p[i][1 - m];
+    if (a <= b) return null;
+    const p = (100 * (a - b)) / b, X = pctThreshold(g, p, want, true);
+    if (X === null) return null;
+    return S("price", "percentage", `${cap(art(pl.items[i].one))} for the '${pl.models[m]}' model is more than ${pctTxt(X)} more expensive than one for the '${pl.models[1 - m]}' model.`, p > X ? "T" : "F",
+      { t: "cmp", item: i, model: m, model2: 1 - m, pct: X, l: [T(["price", i, m], 100), T(["price", i, 1 - m], -100)], op: ">", r: [T(["price", i, 1 - m], X)] },
+      `(${gbp(a)} − ${gbp(b)}) ÷ ${gbp(b)} = ${p.toFixed(1)}% more. Divide by the cheaper (starting) price.`);
+  } },
+);
+TEMPLATES.exp.push(
+  { id: "exp-total-cost", kind: "three-step", hard: true, f(g, P, want) {
+    const e = P.exp, q = g.int(0, 5), Q = e.qty[q], v = (e.fc + e.vc[q]) * Q;
+    const x = want === "T" ? v : falseVal(g, v, [e.vc[q] * Q, e.fc * Q, (e.fc + e.vc[q === 5 ? 4 : q + 1]) * Q], [Q * 10, Q * 50]);
+    return S("exp", "three-step", `Manufacturing ${Q} units costs ${gbp(x)} in total.`, x === v ? "T" : "F",
+      { t: "cmp", q, l: [T(["exp", "fc"], Q), T(["exp", "vc", q], Q)], op: "==", r: x, fmt: "gbp", qty: Q },
+      `Total cost per unit at ${Q}: ${gbp(e.fc)} + ${gbp(e.vc[q])} = ${gbp(e.fc + e.vc[q])}; × ${Q} units = ${gbp(v)}.`);
+  } },
+  { id: "exp-unit-cost-fall", kind: "two-step", hard: true, f(g, P, want) {
+    const e = P.exp, a = g.int(0, 3), b = g.int(a + 1, 5), d = e.vc[a] - e.vc[b];
+    const X = want === "T" ? d - g.int(1, 4) * 10 : d + g.pick([0, 1]) * e.fc + g.int(1, 4) * 10;
+    if (X <= 0 || X === d) return null;
+    return S("exp", "two-step", `Between ${e.qty[a]} units and ${e.qty[b]} units, the total cost per unit falls by more than ${gbp(X)}.`, d > X ? "T" : "F",
+      { t: "cmp", q: a, q2: b, l: [T(["exp", "vc", a]), T(["exp", "vc", b], -1)], op: ">", r: X, fmt: "gbp", qty: e.qty[a], qty2: e.qty[b] },
+      `Fixed cost per unit is constant, so the fall is all variable cost: ${gbp(e.vc[a])} − ${gbp(e.vc[b])} = ${gbp(d)}.`);
+  } },
+);
+TEMPLATES.hours.push(
+  { id: "hours-pair-overtime", kind: "three-step", hard: true, f(g, P, want) {
+    const h = P.hours, [i, j] = g.shuffle([0, 1, 2, 3, 4, 5]).slice(0, 2), oi = h.actual[i] - h.agreed[i], oj = h.actual[j] - h.agreed[j];
+    const v = Math.max(0, oi) + Math.max(0, oj);
+    if (v === 0) return null;
+    const x = want === "T" ? v : falseVal(g, v, [oi + oj, Math.abs(oi) + Math.abs(oj)], [1, 2, 3]);
+    return S("hours", "three-step", `In ${h.month}, ${h.staff[i][0]} ${h.staff[i][1]} and ${h.staff[j][0]} ${h.staff[j][1]} worked ${x} hours of overtime between them.`, x === v ? "T" : "F",
+      { t: "pairOvertime", emp: i, emp2: j, month: h.month, r: x, fmt: "int" },
+      `${h.staff[i][1]}: ${oi > 0 ? oi + " overtime" : oi === 0 ? "exactly agreed hours" : -oi + " short (no overtime)"}; ${h.staff[j][1]}: ${oj > 0 ? oj + " overtime" : oj === 0 ? "exactly agreed hours" : -oj + " short (no overtime)"}. Overtime = ${v}.`);
+  } },
+  { id: "hours-pct-above", kind: "percentage", hard: true, f(g, P, want) {
+    const h = P.hours, over = [0, 1, 2, 3, 4, 5].filter(i => h.actual[i] > h.agreed[i]);
+    if (!over.length) return null;
+    const i = g.pick(over), p = (100 * (h.actual[i] - h.agreed[i])) / h.agreed[i];
+    const Xt = want === "T" ? Math.floor(p * 10 - g.int(5, 30)) : Math.ceil(p * 10 + g.int(5, 30));   // threshold in tenths of a percent
+    if (Xt <= 0) return null;
+    const X = Xt / 10, [t, n] = h.staff[i];
+    return S("hours", "percentage", `${t} ${n} worked more than ${pctTxt(X)} above ${poss(t)} agreed hours in ${h.month}.`, p > X ? "T" : "F",
+      { t: "cmp", emp: i, month: h.month, pct: X, l: [T(["hours", "actual", i], 1000), T(["hours", "agreed", i], -1000)], op: ">", r: [T(["hours", "agreed", i], Xt)] },
+      `(${h.actual[i]} − ${h.agreed[i]}) ÷ ${h.agreed[i]} = ${p.toFixed(2)}%.`);
+  } },
+);
+TEMPLATES.emp.push(
+  { id: "emp-pct-change", kind: "percentage", hard: true, f(g, P, want) {
+    const e = P.emp, c = g.int(0, 2), a = g.int(0, 2), b = g.int(a + 1, 3), va = e.cats[c][a], vb = e.cats[c][b];
+    if (vb <= va) return null;
+    const p = (100 * (vb - va)) / va, X = pctThreshold(g, p, want, true);
+    if (X === null) return null;
+    return S("emp", "percentage", `The number of ${CATS[c].noun} rose by more than ${pctTxt(X)} from financial year ${e.years[a]} to financial year ${e.years[b]}.`, p > X ? "T" : "F",
+      { t: "cmp", cat: c, year: e.years[a], year2: e.years[b], pct: X, l: [T(["emp", c, b], 100), T(["emp", c, a], -100)], op: ">", r: [T(["emp", c, a], X)] },
+      `(${vb} − ${va}) ÷ ${va} = ${p.toFixed(1)}%. Divide by the earlier year.`);
+  } },
+  { id: "emp-share-of-total", kind: "percentage", hard: true, f(g, P, want) {
+    const e = P.emp, c = g.int(0, 2), y = g.int(0, 3), p = (100 * e.cats[c][y]) / e.total[y], more = g.chance(0.5), X = pctThreshold(g, p, want, more);
+    if (X === null) return null;
+    const ok = more ? p > X : p < X;
+    return S("emp", "percentage", `In financial year ${e.years[y]}, ${CATS[c].noun} made up ${more ? "more" : "less"} than ${pctTxt(X)} of all employees.`, ok ? "T" : "F",
+      { t: "cmp", cat: c, year: e.years[y], pct: X, l: [T(["emp", c, y], 100)], op: more ? ">" : "<", r: [T(["emp", "total", y], X)] },
+      `${e.cats[c][y]} ÷ ${e.total[y]} (the Total bar) = ${p.toFixed(1)}%.`);
+  } },
+);
+// Lookups are the easy part of the mock; down-weight them so a test leans on multi-step and percentage work.
+const KIND_W = { "lookup": 0.5, "two-step": 1.5, "three-step": 1.6, "comparison": 1.3, "percentage": 0.7 };
+for (const k of Object.keys(TEMPLATES)) for (const t of TEMPLATES[k]) t.w = t.cs ? 1 : KIND_W[t.kind];
+
 const TABS = [
   { key: "mail", title: "Mail order" },
   { key: "profit", title: "Profit" },
@@ -643,6 +792,8 @@ const TABS = [
   { key: "hours", title: "Working hours" },
   { key: "emp", title: "Employees" },
 ];
+
+function wpick(g, a) { let r = g.f() * a.reduce((s, t) => s + t.w, 0); for (const t of a) { r -= t.w; if (r < 0) return t; } return a[a.length - 1]; }
 
 /* One test: n statements, 3 per tab, mixed order, about 30% Cannot say, the rest split True/False. */
 function makeTest(seed, n) {
@@ -659,7 +810,8 @@ function makeTest(seed, n) {
       if (attempt === 120) want = want === "C" ? "T" : want;         // fall back if a tab cannot make the wanted kind
       const pool = TEMPLATES[slots[s]].filter(t => !!t.cs === (want === "C"));
       const lo = Math.min(...pool.map(t => used.get(t.id) || 0));
-      const t = g.pick(pool.filter(x => (used.get(x.id) || 0) <= lo + (attempt > 40 ? 1 : 0)));
+      const slack = attempt > 160 ? Infinity : attempt > 40 ? 1 : 0;      // prefer unused templates, but never starve one
+      const t = wpick(g, pool.filter(x => (used.get(x.id) || 0) <= lo + slack));
       const st = t.f(g, P, want);
       if (!st || seen.has(st.text) || (want !== "C" && st.answer !== want)) continue;
       st.template = t.id; made = st;
@@ -678,14 +830,453 @@ if (typeof module !== "undefined" && module.exports) module.exports = API; else 
 
 </script>
 <script>
+/* Aon-style verbal statements: a fictional bank described in six text tabs, plus True / False / Cannot say statements.
+   Every tab is written from a structured "world"; every statement is built from "atoms" (single claims about that world),
+   so verify-verbal.js can re-derive each answer from the world without trusting this file.
+   Atom rules:  eq  (single-valued fact: match -> True, mismatch -> False)
+                has (list membership: present -> True, absent -> Cannot say, because lists are not exhaustive)
+                only (claims a list has just one item: list longer -> False)
+                cmp (numbers)
+                novel (a detail no tab mentions -> Cannot say)
+   A statement with several atoms is False if any atom is False, else Cannot say if any is, else True. */
+(function (root) {
+"use strict";
+const Gen = typeof module !== "undefined" && module.exports ? require("./gen.js") : root.AonGen;
+const { Rng } = Gen;
+
+const WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
+const word = n => WORDS[n];
+const cap = s => s[0].toUpperCase() + s.slice(1);
+const list = a => (a.length === 1 ? a[0] : a.slice(0, -1).join(", ") + " and " + a[a.length - 1]);
+
+const BANKS = ["Albion Bank", "Kestrel Bank", "Northbridge Bank", "Harlow Bank", "Stanmore Bank"];
+const DIVS = [
+  { code: "IB", name: "Investment Bank", clients: ["private and public institutions", "medium-sized companies", "global companies"], offer: "capital market products" },
+  { code: "PBC", name: "Private and Business Clients", clients: ["private clients", "small businesses"], offer: "investment services" },
+  { code: "CB", name: "Corporate Banking", clients: ["large corporations", "public-sector bodies"], offer: "loans and cash management" },
+  { code: "WM", name: "Wealth Management", clients: ["wealthy private clients", "family offices"], offer: "portfolio management" },
+  { code: "EI", name: "Estate Investments", clients: ["institutional investors", "pension funds"], offer: "investments in real estate and industrial holdings" },
+];
+const PEOPLE = [["Richard", "Henderson", "m"], ["Gerald", "Watson", "m"], ["Susan", "Gaffney", "f"], ["Frank", "Hill", "m"], ["Amira", "Khalid", "f"], ["Thomas", "Brandt", "m"],
+  ["Helen", "Marsh", "f"], ["Daniel", "Okoye", "m"], ["Laura", "Fischer", "f"], ["Martin", "Novak", "m"], ["Claire", "Dubois", "f"], ["Victor", "Lindqvist", "m"]];
+const QUALS = ["fully qualified lawyer", "trained economist", "chartered accountant"];
+const ROLES = ["legal advisor", "senior manager", "risk analyst", "portfolio manager", "credit officer", "financial consultant"];
+const PLACES = ["an English investment bank", "a Swiss private bank", "a German savings bank", "a Dutch insurer"];
+const CITIES = ["London", "Dublin", "New York", "Zurich", "Hong Kong", "Paris", "Madrid", "Vienna"];
+const BRANCH_CITIES = ["Düsseldorf", "Frankfurt", "Cologne", "Munich", "Hamburg", "Stuttgart"];
+const SALE_COUNTRIES = ["the USA", "Canada", "Spain", "Italy", "Poland"];
+const SALE_SERVICES = ["client advisory", "management of bank accounts", "investments", "foreign exchange", "mortgage lending"];
+const COST_LEVERS = ["the restructuring of measures", "the dismissal of employees", "merging back-office functions", "closing regional offices", "renegotiating supplier contracts"];
+const RETURN_LEVERS = ["a rearrangement of the risk assets", "a share buyback", "the sale of non-core holdings"];
+const ACQ_NATS = ["English", "Scottish", "Swiss", "Irish", "Dutch"];
+const ACQ_NAMES = ["BestConsult", "Ashcombe & Co", "Pryor Private", "Thornfield"];
+const RIGHTS = ["the acquisition and free sale of shares", "the exercise of voting rights", "the participation in the company's profits", "attendance at the annual general meeting", "access to information about the company"];
+const PERIODS = ["financial quarter", "half-year", "month"];
+const PC_OFFERS = ["money investments", "provisions for the future", "capital accumulation", "investment in funds", "pension planning", "insurance products"];
+const BC_OFFERS = ["international payment transactions", "interest and currency management", "securitisation", "trade finance", "cash pooling"];
+const BIG_OFFERS = ["company financing", "outside capital", "leasing", "government support", "export credit"];
+const REGIONS = ["Europe", "the USA", "South America", "Asia", "Africa", "the Middle East"];
+const AM_COUNTRIES = ["Australia", "Japan", "Singapore", "Brazil", "Canada", "India", "Mexico", "South Africa"];
+const STRONG_COUNTRIES = ["Germany", "France", "the Netherlands", "Austria"];
+const HQ_CITIES = ["Frankfurt", "London", "Paris", "Amsterdam", "Vienna"];
+// Which region a named country belongs to (used to keep "Cannot say" regions truly unmentioned).
+const REGION_OF = { Japan: "Asia", Singapore: "Asia", India: "Asia", "Hong Kong": "Asia", Brazil: "South America", Mexico: "South America", Argentina: "South America", Chile: "South America", Peru: "South America", "South Africa": "Africa" };
+const impliedRegions = W => Object.keys(REGION_OF).filter(c => W._text.includes(c.toLowerCase())).map(c => REGION_OF[c]);
+
+function makeWorld(g) {
+  const bank = g.pick(BANKS);
+  const divs = g.shuffle(DIVS).slice(0, 3).map(d => ({ ...d }));
+  divs[0].role = "big"; divs[1].role = "normal"; divs[2].role = "small";
+  const ppl = g.shuffle(PEOPLE).slice(0, 5).map(([first, last, sex]) => ({ first, last, name: `${first} ${last}`, sex }));
+  const extra = ppl[4];
+  const board = ppl.slice(0, 4);
+  const cities = g.shuffle(CITIES);
+  board.forEach((p, i) => {
+    p.boardYears = g.int(2, 8);
+    p.qual = g.chance(0.6) ? g.pick(QUALS) : null;
+    p.mba = !p.qual;
+    p.dr = g.chance(0.5);
+    p.role = i === 0 ? "chair" : "director";
+    if (i > 0) { p.div = divs[i - 1].code; p.dirYears = p.boardYears + g.int(0, 4); }
+  });
+  // Careers: A (role + place + years + city), B (role + city), C (traineeship + city stint without a role), D (positions at a consultancy)
+  const types = g.shuffle(["A", "B", "C", "D"]);
+  board.forEach((p, i) => {
+    p.career = types[i]; p.city = cities[i];
+    if (p.career === "A") { p.prevRole = g.pick(ROLES); p.prevPlace = g.pick(PLACES); p.prevYears = g.int(3, 9); p.dr = true; }
+    if (p.career === "B") p.prevRole = g.pick(ROLES);
+    if (p.career === "C") p.branch = g.pick(BRANCH_CITIES);
+  });
+  const [s1, s2] = g.shuffle(COST_LEVERS), [r1, r2] = g.shuffle(RETURN_LEVERS);
+  const fo = g.shuffle(["Europe", "the USA", "Asia"]).slice(0, g.int(2, 3));
+  const inv = g.shuffle(REGIONS.filter(r => r !== "Europe"));
+  return {
+    bank, divs, board, extra,
+    umbrellaOverlap: "some",
+    sale: { country: g.pick(SALE_COUNTRIES), services: g.shuffle(SALE_SERVICES).slice(0, 3), replaced: "some", freesFor: divs[0].code },
+    costs: [s1, s2], returns: [r1, r2],
+    acq: { nat: g.pick(ACQ_NATS), name: g.pick(ACQ_NAMES) },
+    rights: g.shuffle(RIGHTS).slice(0, 3),
+    duties: { strategy: "Board of Directors", goals: "Board of Directors", compensation: "Supervisory Board", profits: "Supervisory Board" },
+    period: g.pick(PERIODS),
+    pc: g.shuffle(PC_OFFERS).slice(0, 4), bc: g.shuffle(BC_OFFERS).slice(0, 3), big: g.shuffle(BIG_OFFERS).slice(0, 2),
+    experts: "optionally", projects: ["regional", "national"],
+    invMain: "Europe", invOthers: inv.slice(0, 3),
+    amCountries: g.shuffle(AM_COUNTRIES).slice(0, 4), amEurope: "private clients",
+    foRegions: fo, pcRegions: g.shuffle(["Western Europe", "the USA", "Australia", "Asia", "Scandinavia"]).slice(0, 3),
+    strong: g.pick(STRONG_COUNTRIES), hq: g.pick(HQ_CITIES),
+  };
+}
+
+/* ---------- tab text ---------- */
+const he = p => (p.sex === "f" ? "she" : "he"), his = p => (p.sex === "f" ? "her" : "his");
+const full = p => (p.dr ? "Dr. " : "") + p.name;
+function qualTxt(p) { return p.qual ? ` and ${p.qual}` : " with an MBA"; }
+function careerTxt(W, p) {
+  if (p.career === "A") return `After completing ${his(p)} PhD, ${he(p)} worked as a ${p.prevRole} for ${p.prevPlace} for ${word(p.prevYears)} years in ${p.city}.`;
+  if (p.career === "B") return `${cap(he(p))} started off working as a ${p.prevRole} in ${p.city} before ${he(p)} joined ${W.bank}.`;
+  if (p.career === "C") return `After ${his(p)} traineeship in a bank and after spending several years in ${p.city}, ${he(p)} became one of the directors of ${W.bank}'s ${p.branch} branch.`;
+  return `${cap(he(p))} held the positions of manager, director, and partner in a big consultancy company in ${p.city} before ${he(p)} joined ${W.bank}.`;
+}
+function renderTabs(W) {
+  const [big, normal, small] = W.divs, B = W.bank;
+  const para = (h, t) => ({ h, t });
+  return {
+    structure: [
+      para("Umbrella organisation", `It supports the Board of Directors in managing the entire bank. Some members of the umbrella organisation are simultaneously members of the Board of Directors. ${W.extra.name} is one of the members of the Board of Directors. Subordinated to the umbrella organisation are three divisions:`),
+      para(`${big.name} (${big.code})`, `This division is the biggest and most important one of ${B} and serves ${list(big.clients)}. The focus of the client segments is mostly in Europe but is also in other countries of the world.`),
+      para(`${normal.name} (${normal.code})`, `Clients are normally ${list(normal.clients)}. Every client has their own contact person. ${normal.code} offers ${normal.offer} on a worldwide basis.`),
+      para(`${small.name} (${small.code})`, `${small.code} specialises in ${small.offer}. Although this division is rather insignificant, the group will not withdraw from this sector in the foreseeable future as it is of strategic importance.`),
+    ],
+    strategy: [
+      para("Concentration on the core business", ""),
+      para("Sale", `${B} sold branch offices in ${W.sale.country} that offered services like ${list(W.sale.services)}. Some of these services were replaced by online banking. Numerous advisory services were outsourced in order to release resources for the ${W.sale.freesFor} division.`),
+      para("Restructuring", `Costs could be decreased by ${W.costs[0]} or ${W.costs[1]}. The return on net assets could be increased by ${W.returns[0]} and ${W.returns[1]}.`),
+      para("Acquisitions", `To provide private clients with a more individual advisory service, ${B} acquired the ${W.acq.nat} private bank ${W.acq.name}, which is a leader in this sector and has a wide range of experience in investments for private clients.`),
+    ],
+    principles: [
+      para("Company principles", "All divisions and umbrella organisations as well as investment advisors are obliged to comply with these principles. They include:"),
+      para("Shareholders' rights", `Shareholders' rights include ${list(W.rights)}.`),
+      para("Duties of the Board of Directors and Supervisory Board", `They are obliged to comply with the interests of ${B}. The Board of Directors decides on the strategy of the company and is in charge of all issues relating to the achievement of ${B}'s goals. Additionally, the Board of Directors has to inform the Supervisory Board about the situation of the group on a regular basis. When the Board of Directors decides on the appropriation of the company's profits, the Supervisory Board must approve it.`),
+      para("Compensation", "The compensation of the members of the Board of Directors and of the senior managers of the group will be determined by the Supervisory Board."),
+      para("Transparency", `Is ensured if financial reports are provided in a timely manner, optimally every ${W.period}, and also if major decisions relating to the company's strategy are brought before the Supervisory Board in order to be approved.`),
+    ],
+    products: [
+      para("Private clients", `Private clients are offered ${W.pc[0]} and ${W.pc[1]}. In addition to the management of bank accounts, they are also offered services for ${W.pc[2]} and ${W.pc[3]}.`),
+      para("Business clients", `${B} supports self-employed people and family businesses in the financing and safeguarding of their companies. ${B} offers the services of ${list(W.bc)}, due to the globalisation of many companies.`),
+      para("Big corporations", `For big corporations, ${B} offers programmes for ${W.big[0]} and ${W.big[1]}. Industry experts may carry out credit checks and then optionally accompany repositioning efforts. All products and services are designed either for regional or national projects.`),
+      para("Investments", `Investments are enabled mainly by equity and bond funds in Europe but are also offered in ${list(W.invOthers)}. The hedge funds of ${B} offer the chance of high returns in a very short time period.`),
+    ],
+    locations: [
+      para("Asset management", `In Europe, the bank offers its investment services mainly to private clients but also to small businesses. In ${list(W.amCountries)}, they are offered mainly to big corporations.`),
+      para("Investment funds/options", `Investment funds and options are offered in ${list(W.foRegions)}. In countries where it offers options, ${B} also offers real estate funds.`),
+      para("Private clients", `The regional focuses are in ${list(W.pcRegions)}. Investments are made both in their own products and outside products.`),
+      para("Regional focus", `In Europe, especially in ${W.strong}, ${B} has a strong position in all company divisions. If the number of employees is taken as a criterion, the most important branch office of ${B} is ${W.hq}.`),
+    ],
+    board: W.board.map(p => para(full(p), p.role === "chair"
+      ? `Chairman of the Board of Directors${qualTxt(p)}. ${cap(he(p))} has been a member of the Board of Directors for ${word(p.boardYears)} years. ${careerTxt(W, p)}`
+      : `Director of the ${p.div} division${qualTxt(p)}. ${careerTxt(W, p)} ${cap(he(p))} has been the director of the ${p.div} division for the past ${word(p.dirYears)} years and has been a member of the Board of Directors for the past ${word(p.boardYears)} years.`)),
+  };
+}
+const VTABS = [
+  { key: "structure", title: "Structure" }, { key: "strategy", title: "Strategy" }, { key: "principles", title: "Principles" },
+  { key: "products", title: "Products & Services" }, { key: "locations", title: "Locations" }, { key: "board", title: "Board of Directors" },
+];
+
+/* ---------- statement helpers ---------- */
+// Atoms: {k, path, say, ...}. `path` points into the world; `say` is what the statement claims.
+const A = {
+  eq: (path, say) => ({ k: "eq", path, say }),
+  has: (path, say) => ({ k: "has", path, say }),
+  only: (path, say) => ({ k: "only", path, say }),
+  cmp: (l, op, r) => ({ k: "cmp", l, op, r }),
+  novel: say => ({ k: "novel", say }),
+};
+function V(tab, kind, text, answer, atoms, expl) { return { tab, kind, text, answer, atoms, expl }; }
+const other = (g, a, x) => g.pick(a.filter(v => v !== x));
+// A detail for a Cannot-say statement: unused, and not mentioned anywhere in the six tabs ("Africa" is out if a tab says "South Africa").
+const fresh = (g, pool, used, W) => { const c = pool.filter(v => !used.includes(v) && !W._text.includes(v.toLowerCase())); return c.length ? g.pick(c) : null; };
+const person = (W, i) => W.board[i];
+
+/* Templates: (g, W, want) -> statement or null.  want "T" | "F" | "C". */
+const VT = {
+  structure: [
+    { id: "s-biggest", ans: "TF", f(g, W, want) {
+      const d = want === "T" ? W.divs[0] : g.pick(W.divs.slice(1));
+      return V("structure", "detail swap", `The ${d.code} division is the biggest and most important division of ${W.bank}.`, d.role === "big" ? "T" : "F",
+        [A.eq(["divRole", d.code], "big")], `Structure: ${W.divs[0].code} is "the biggest and most important one". Only one division can be the biggest.`);
+    } },
+    { id: "s-withdraw", ans: "TF", f(g, W, want) {
+      const d = W.divs[2];
+      if (want === "T") return V("structure", "paraphrase", `Although the ${d.code} division is rather insignificant, ${W.bank} intends to stay in this sector for the foreseeable future.`, "T",
+        [A.eq(["divRole", d.code], "small"), A.eq(["withdraw"], "no")], `Structure: "the group will not withdraw from this sector in the foreseeable future".`);
+      return V("structure", "contradiction", `Because the ${d.code} division is rather insignificant, ${W.bank} plans to withdraw from this sector soon.`, "F",
+        [A.eq(["divRole", d.code], "small"), A.eq(["withdraw"], "yes")], `The text says the opposite: the group will not withdraw in the foreseeable future.`);
+    } },
+    { id: "s-umbrella-members", ans: "TF", f(g, W, want) {
+      const say = want === "T" ? "some" : "all";
+      return V("structure", want === "T" ? "paraphrase" : "absolute word", want === "T" ? `At least some members of the umbrella organisation also sit on the Board of Directors.` : `All members of the umbrella organisation also sit on the Board of Directors.`, say === W.umbrellaOverlap ? "T" : "F",
+        [A.eq(["umbrellaOverlap"], say)], `Structure: "Some members of the umbrella organisation are simultaneously members of the Board of Directors."`);
+    } },
+    { id: "s-clients", ans: "TF", f(g, W, want) {
+      const d = W.divs[1];
+      if (want === "T") { const c = g.pick(d.clients); return V("structure", "paraphrase", `Among the clients of the ${d.name} division are ${c}, and each client has their own contact person.`, "T",
+        [A.has(["divClients", d.code], c), A.eq(["contact", d.code], "yes")], `Structure: clients are normally ${list(d.clients)}; every client has their own contact person.`); }
+      const c = g.pick(d.clients);
+      return V("structure", "absolute word", `All clients of the ${d.name} division are ${c}.`, d.clients.length > 1 ? "F" : "T",
+        [A.only(["divClients", d.code], c)], `Structure lists several client groups for ${d.code}: ${list(d.clients)}.`);
+    } },
+    { id: "s-cs", ans: "C", f(g, W) {
+      const k = g.int(0, 2), [, n, s] = W.divs;
+      const text = [`${W.bank}'s umbrella organisation supports the Board of Directors with drawing up the annual report.`,
+        `The ${n.code} division employs more staff than the ${s.code} division.`,
+        `${W.extra.name} chairs the umbrella organisation.`][k];
+      const nv = ["annual report", "staff", "chairs"][k];
+      return V("structure", ["invented detail", "unsupported comparison", "invented role"][k], text, "C", [A.novel(nv)],
+        ["The umbrella organisation supports the Board in managing the bank; an annual report is never mentioned.", "The text gives no staff numbers for divisions.", `${W.extra.name} is named as a Board member; nothing says who chairs the umbrella organisation.`][k]);
+    } },
+  ],
+  board: [
+    { id: "b-chair", ans: "TF", f(g, W, want) {
+      const i = want === "T" ? 0 : g.int(1, 3), p = person(W, i);
+      return V("board", "detail swap", `${p.name} is the Chairman of the Board of Directors.`, i === 0 ? "T" : "F",
+        [A.eq(["chair"], p.name)], `Board of Directors: ${person(W, 0).name} is the Chairman; ${i ? `${p.name} is director of the ${p.div} division.` : ""}`);
+    } },
+    { id: "b-years", ans: "TF", f(g, W, want) {
+      const p = person(W, g.int(0, 3)), n = want === "T" ? p.boardYears : other(g, [2, 3, 4, 5, 6, 7, 8, 9], p.boardYears);
+      return V("board", "number", `${p.name} has been a member of the Board of Directors for ${word(n)} years.`, n === p.boardYears ? "T" : "F",
+        [A.cmp(["boardYears", p.name], "==", n)], `Board of Directors: ${p.name}, ${word(p.boardYears)} years on the Board.`);
+    } },
+    { id: "b-longer", ans: "TF", f(g, W, want) {
+      for (let k = 0; k < 10; k++) {
+        const [a, b] = g.shuffle(W.board).slice(0, 2), ok = a.boardYears > b.boardYears;
+        if (ok !== (want === "T")) continue;
+        return V("board", "comparison", `${a.name} has been on the Board of Directors for longer than ${b.name}.`, ok ? "T" : "F",
+          [A.cmp(["boardYears", a.name], ">", ["boardYears", b.name])], `${a.last}: ${word(a.boardYears)} years; ${b.last}: ${word(b.boardYears)} years.`);
+      }
+      return null;
+    } },
+    { id: "b-before-board", ans: "TF", f(g, W, want) {
+      const ds = W.board.slice(1).filter(p => p.dirYears > p.boardYears);
+      if (!ds.length) return null;
+      const p = g.pick(ds), k = p.dirYears - p.boardYears, n = want === "T" ? k : other(g, [1, 2, 3, 4, 5].filter(x => x !== k), k);
+      return V("board", "inference", `${p.name} had already been director of the ${p.div} division for ${word(n)} year${n === 1 ? "" : "s"} when ${he(p)} joined the Board of Directors.`, n === k ? "T" : "F",
+        [A.cmp(["dirMinusBoard", p.name], "==", n)], `Director for the past ${word(p.dirYears)} years, on the Board for the past ${word(p.boardYears)}: ${p.dirYears} − ${p.boardYears} = ${k}.`);
+    } },
+    { id: "b-prev-role", ans: "TF", f(g, W, want) {
+      const p = W.board.find(x => x.career === "A");
+      const role = want === "T" ? p.prevRole : other(g, ROLES, p.prevRole);
+      return V("board", want === "T" ? "paraphrase" : "detail swap", `${p.name} worked as a ${role} for ${p.prevPlace}.`, role === p.prevRole ? "T" : "F",
+        [A.eq(["prevRole", p.name], role)], `Board of Directors: ${p.last} worked as a ${p.prevRole} for ${p.prevPlace}.`);
+    } },
+    { id: "b-two-part", ans: "TF", f(g, W, want) {
+      const p = W.board.find(x => x.career === "A" || x.career === "B");
+      const q = g.pick(W.board.filter(x => x !== p && x.boardYears !== p.boardYears));
+      if (!q) return null;
+      const longer = p.boardYears > q.boardYears;
+      const sayLonger = want === "T" ? longer : g.chance(0.5) ? !longer : longer;
+      const city = want === "T" || sayLonger !== longer ? p.city : other(g, CITIES, p.city);
+      if (want === "F" && sayLonger === longer && city === p.city) return null;
+      const atoms = [A.eq(["prevCity", p.name], city), A.cmp(["boardYears", p.name], sayLonger ? ">" : "<", ["boardYears", q.name])];
+      const ans = city === p.city && sayLonger === longer ? "T" : "F";
+      return V("board", "two-part", `${p.name} worked in ${city} before joining ${W.bank} and has been on the Board of Directors ${sayLonger ? "longer" : "for less time"} than ${q.name}.`, ans,
+        atoms, `Both halves must hold. ${p.last} worked in ${p.city}; Board years: ${p.last} ${p.boardYears}, ${q.last} ${q.boardYears}.`);
+    } },
+    { id: "b-cs", ans: "C", f(g, W) {
+      const c = W.board.find(x => x.career === "C"), k = g.int(0, 1);
+      if (k === 0) {
+        const role = g.pick(["customer consultant", "currency trader", "branch manager"]);
+        return V("board", "invented purpose", `${c.name} went to ${c.city} after ${his(c)} traineeship in order to work as a ${role}.`, "C",
+          [A.has(["prevCity", c.name], c.city), A.novel(role)], `${c.last} did spend several years in ${c.city}, but the text never says what ${he(c)} did there.`);
+      }
+      const p = g.pick(W.board), city = fresh(g, CITIES, W.board.map(x => x.city), W);
+      return V("board", "invented detail", `${p.name} completed ${his(p)} studies in ${city}.`, "C", [A.novel(city)], `The Board of Directors tab says nothing about where anyone studied.`);
+    } },
+  ],
+  strategy: [
+    { id: "t-only-return", ans: "F", f(g, W) {
+      const r = g.pick(W.returns);
+      return V("strategy", "absolute word", `The return on net assets could only be increased through ${r}.`, "F",
+        [A.only(["returns"], r)], `Strategy names two ways: ${W.returns[0]} and ${W.returns[1]}.`);
+    } },
+    { id: "t-outsourcing", ans: "T", f(g, W) {
+      const k = g.int(0, 1);
+      return V("strategy", "paraphrase", k === 0 ? `In line with the focus on the core business, the outsourcing of advisory services should free up resources for another division of ${W.bank}.` : `Advisory services were outsourced so that the ${W.sale.freesFor} division would have more resources.`, "T",
+        [A.eq(["freesFor"], W.sale.freesFor)], `Strategy: advisory services were outsourced "in order to release resources for the ${W.sale.freesFor} division".`);
+    } },
+    { id: "t-replaced", ans: "TF", f(g, W, want) {
+      const say = want === "T" ? "some" : "all";
+      return V("strategy", want === "T" ? "paraphrase" : "absolute word", `${cap(say)} of the services offered by the branch offices sold in ${W.sale.country} were replaced by online banking.`, say === W.sale.replaced ? "T" : "F",
+        [A.eq(["saleCountry"], W.sale.country), A.eq(["replaced"], say)], `Strategy: "Some of these services were replaced by online banking."`);
+    } },
+    { id: "t-acq-nat", ans: "TF", f(g, W, want) {
+      const nat = want === "T" ? W.acq.nat : other(g, ACQ_NATS, W.acq.nat);
+      return V("strategy", "detail swap", `${W.bank} acquired the ${nat} private bank ${W.acq.name} to give private clients a more individual advisory service.`, nat === W.acq.nat ? "T" : "F",
+        [A.eq(["acqNat"], nat), A.eq(["acqName"], W.acq.name)], `Strategy: ${W.acq.name} is ${/^[AEIOU]/.test(W.acq.nat) ? "an" : "a"} ${W.acq.nat} private bank.`);
+    } },
+    { id: "t-costs", ans: "TC", f(g, W, want) {
+      const lever = want === "T" ? g.pick(W.costs) : fresh(g, COST_LEVERS, W.costs, W);
+      if (!lever) return null;
+      return V("strategy", want === "T" ? "paraphrase" : "invented detail", `According to the strategy, costs could be reduced by ${lever}.`, W.costs.includes(lever) ? "T" : "C",
+        [W.costs.includes(lever) ? A.has(["costs"], lever) : A.novel(lever)], `Strategy names ${W.costs[0]} or ${W.costs[1]}${W.costs.includes(lever) ? "." : "; nothing about " + lever + "."}`);
+    } },
+    { id: "t-cs", ans: "C", f(g, W) {
+      const k = g.int(0, 2);
+      const c = fresh(g, SALE_COUNTRIES, [W.sale.country], W);
+      if (k === 0 && !c) return null;
+      const text = [`${W.bank} also closed branch offices in ${c}.`, `${W.bank} acquired ${W.acq.name} in order to expand into Asia.`, `As a result of the restructuring, the ${W.divs[0].code} division was changed from a line to a matrix organisation.`][k];
+      return V("strategy", ["invented detail", "invented purpose", "invented detail"][k], text, "C", [A.novel(["closed", "expand into", "matrix"][k])],
+        [`Only the sale of branches in ${W.sale.country} is mentioned.`, "The stated purpose is a more individual advisory service for private clients; expansion into Asia is never mentioned.", "The restructuring section says nothing about the organisation structure."][k]);
+    } },
+  ],
+  principles: [
+    { id: "p-strategy-body", ans: "TF", f(g, W, want) {
+      const body = want === "T" ? "Board of Directors" : "Supervisory Board", k = g.int(0, 1);
+      const text = k === 0 ? `According to the company principles, the ${body} decides on the strategy of the company.` : `According to the company principles, the ${body} is responsible for all issues relating to the achievement of the group's goals.`;
+      return V("principles", "detail swap", text, body === W.duties[k === 0 ? "strategy" : "goals"] ? "T" : "F",
+        [A.eq(["duty", k === 0 ? "strategy" : "goals"], body)], `Principles: the Board of Directors decides on strategy and is in charge of all issues relating to the goals.`);
+    } },
+    { id: "p-compensation", ans: "TF", f(g, W, want) {
+      const body = want === "T" ? "Supervisory Board" : "Board of Directors";
+      return V("principles", "detail swap", `The compensation of the group's senior managers is determined by the ${body}.`, body === W.duties.compensation ? "T" : "F",
+        [A.eq(["duty", "compensation"], body)], `Principles: compensation is "determined by the Supervisory Board".`);
+    } },
+    { id: "p-two-duties", ans: "TF", f(g, W, want) {
+      if (want === "T") return V("principles", "two-part", `The Board of Directors must keep the Supervisory Board regularly informed, and major strategic decisions need the Supervisory Board's approval.`, "T",
+        [A.eq(["informs"], "regularly"), A.eq(["strategyApproval"], "Supervisory Board")], `Principles: both are stated (Duties and Transparency).`);
+      return V("principles", "two-part", `The Board of Directors must keep the Supervisory Board regularly informed, but it can decide on the appropriation of profits without the Supervisory Board's approval.`, "F",
+        [A.eq(["informs"], "regularly"), A.eq(["duty", "profits"], "Board of Directors")], `The first half is true, but the Supervisory Board must approve the appropriation of profits.`);
+    } },
+    { id: "p-rights", ans: "TC", f(g, W, want) {
+      if (want === "T") { const [a] = g.shuffle(W.rights); return V("principles", "paraphrase", `Shareholders' rights include, among other things, ${a}.`, "T", [A.has(["rights"], a)], `Principles: shareholders' rights include ${list(W.rights)}.`); }
+      const r = fresh(g, RIGHTS, W.rights, W);
+      if (!r) return null;
+      return V("principles", "invented detail", `Shareholders' rights include, among other things, ${r}.`, "C", [A.novel(r)], `Principles list ${list(W.rights)}; ${r} is not mentioned, and the list does not claim to be complete.`);
+    } },
+    { id: "p-period", ans: "TF", f(g, W, want) {
+      const per = want === "T" ? W.period : other(g, PERIODS, W.period);
+      return V("principles", "detail swap", `To ensure transparency, financial reports should optimally be provided every ${per}.`, per === W.period ? "T" : "F",
+        [A.eq(["period"], per)], `Principles: "optimally every ${W.period}".`);
+    } },
+    { id: "p-cs", ans: "C", f(g, W) {
+      const n = g.int(3, 6), k = g.int(0, 1);
+      const text = k === 0 ? `According to the company principles, the Board of Directors can decide on a change of strategy every ${word(n)} years.` : `Investment advisors who break the company principles are dismissed.`;
+      return V("principles", "invented detail", text, "C", [A.novel(k === 0 ? `every ${word(n)} years` : "dismissed")],
+        k === 0 ? "The Board decides on strategy, but no time frame is given." : "Advisors must comply with the principles; consequences are never mentioned.");
+    } },
+  ],
+  products: [
+    { id: "r-business-clients", ans: "T", f(g, W) {
+      return V("products", "paraphrase", `Business clients of ${W.bank} include self-employed people and family businesses.`, "T", [A.eq(["bcWho"], "self-employed people and family businesses")], `Products & Services: "${W.bank} supports self-employed people and family businesses".`);
+    } },
+    { id: "r-experts", ans: "TF", f(g, W, want) {
+      const say = want === "T" ? "optionally" : "always";
+      return V("products", want === "T" ? "paraphrase" : "absolute word", want === "T" ? `For big corporations, industry experts may carry out credit checks and can also support repositioning efforts.` : `For big corporations, industry experts always accompany repositioning efforts after a credit check.`, say === W.experts ? "T" : "F",
+        [A.eq(["experts"], say)], `Products & Services: experts "may carry out credit checks and then optionally accompany repositioning efforts".`);
+    } },
+    { id: "r-projects", ans: "TF", f(g, W, want) {
+      const say = want === "T" ? "national" : "international";
+      return V("products", want === "T" ? "paraphrase" : "detail swap", want === "T" ? `Some of the products for big corporations may be designed for national projects.` : `Products and services for big corporations are designed for international projects.`, W.projects.includes(say) ? "T" : "F",
+        [A.eq(["projectsInclude"], say)], `Products & Services: "All products and services are designed either for regional or national projects."`);
+    } },
+    { id: "r-hedge", ans: "TF", f(g, W, want) {
+      const say = want === "T" ? "chance" : "guarantee";
+      return V("products", want === "T" ? "paraphrase" : "detail swap", `The hedge funds of ${W.bank} ${want === "T" ? "offer the possibility of" : "guarantee"} high returns within a very short time.`, say === "chance" ? "T" : "F",
+        [A.eq(["hedge"], say)], `Products & Services: hedge funds "offer the chance of high returns".`);
+    } },
+    { id: "r-investment-region", ans: "TC", f(g, W, want) {
+      const r = want === "T" ? g.pick(W.invOthers) : fresh(g, REGIONS, ["Europe"].concat(W.invOthers, W.foRegions, impliedRegions(W)), W);
+      if (!r) return null;
+      return V("products", want === "T" ? "paraphrase" : "invented detail", `${W.bank}'s investments are also offered in ${r}.`, W.invOthers.includes(r) ? "T" : "C",
+        [W.invOthers.includes(r) ? A.has(["invOthers"], r) : A.novel(r)], `Products & Services: investments are mainly in Europe but also offered in ${list(W.invOthers)}.`);
+    } },
+    { id: "r-cs", ans: "C", f(g, W) {
+      const k = g.int(0, 3);
+      const text = [`${W.bank}'s industry experts can advise business clients, but not big corporations, as consultants during the acquisition of another company.`,
+        `The equity funds offered by ${W.bank} are checked regularly for their return on investment.`,
+        `Private clients of ${W.bank} pay no fees for the management of their bank accounts.`,
+        `Self-employed people receive lower interest rates on financing than big corporations.`][k];
+      return V("products", "invented detail", text, "C", [A.novel(["acquisition of another company", "checked regularly", "fees", "interest rates"][k])],
+        ["Experts do credit checks and repositioning for big corporations; advice on acquisitions is never mentioned.", "Nothing is said about checking fund returns.", "Account management is offered; fees are never mentioned.", "No interest rates are given for any client group."][k]);
+    } },
+  ],
+  locations: [
+    { id: "l-am-segment", ans: "TF", f(g, W, want) {
+      const c = g.pick(W.amCountries), seg = want === "T" ? "big corporations" : "private clients";
+      return V("locations", "detail swap", `In ${c}, asset management is offered mainly to ${seg}.`, seg === "big corporations" ? "T" : "F",
+        [A.eq(["amSegment", c], seg)], `Locations: in ${list(W.amCountries)} it is offered mainly to big corporations (private clients are the focus in Europe).`);
+    } },
+    { id: "l-real-estate", ans: "TC", f(g, W, want) {
+      const r = want === "T" ? g.pick(W.foRegions) : fresh(g, ["Europe", "the USA", "Asia"], W.foRegions.concat(W.invOthers, impliedRegions(W)), W);
+      if (!r) return null;
+      return V("locations", want === "T" ? "inference" : "reversed rule", want === "T" ? `${W.bank} offers real estate funds in ${r}.` : `${W.bank} offers real estate funds in ${r}.`, W.foRegions.includes(r) ? "T" : "C",
+        [A.eq(["realEstateIn", r], "yes")], W.foRegions.includes(r) ? `Options are offered in ${r}, and wherever options are offered, real estate funds are too.` : `Options are offered only in ${list(W.foRegions)}; nothing tells us about real estate funds in ${r}.`);
+    } },
+    { id: "l-converse", ans: "C", f(g, W) {
+      return V("locations", "reversed rule", `In every country where ${W.bank} offers real estate funds, it also offers options.`, "C",
+        [A.eq(["converseRule"], "yes")], `The rule only goes one way: options → real estate funds. The reverse is not stated.`);
+    } },
+    { id: "l-branch", ans: "TFC", f(g, W, want) {
+      if (want === "C") return V("locations", "criterion swap", `${W.hq} is ${W.bank}'s most profitable branch office.`, "C", [A.novel("profitable")], `${W.hq} is the most important branch by number of employees; profit is never mentioned.`);
+      const city = want === "T" ? W.hq : other(g, HQ_CITIES, W.hq);
+      return V("locations", "detail swap", `Measured by the number of employees, ${city} is ${W.bank}'s most important branch office.`, city === W.hq ? "T" : "F",
+        [A.eq(["hq"], city)], `Locations: by number of employees, the most important branch is ${W.hq}.`);
+    } },
+    { id: "l-cs", ans: "C", f(g, W) {
+      const c = fresh(g, AM_COUNTRIES.concat(["Argentina", "Chile", "Peru"]), W.amCountries, W);
+      return V("locations", "invented detail", `Asset management outside Europe is primarily offered in ${c}.`, "C", [A.novel(c)], `Locations names ${list(W.amCountries)} outside Europe and never ranks them; ${c} is not mentioned.`);
+    } },
+  ],
+};
+
+/* Answer derived from the world (used by the generator only to label; verify-verbal.js re-derives independently). */
+function makeVerbalTest(seed, n) {
+  n = n || 18;
+  const g = Rng(seed ^ 0x5eed), W = makeWorld(g), tabs = renderTabs(W);
+  W._text = Object.values(tabs).flat().map(p => p.h + ". " + p.t).join("\n").toLowerCase();
+  const nCs = Math.round(n * (0.39 + g.f() * 0.11));
+  const nT = Math.round((n - nCs) / 2) + g.pick([-1, 0, 1]), nF = n - nCs - nT;
+  const wants = g.shuffle([].concat(Array(nCs).fill("C"), Array(nT).fill("T"), Array(nF).fill("F")));
+  const slots = g.shuffle([].concat(...VTABS.map(t => Array(Math.ceil(n / 6)).fill(t.key)))).slice(0, n);
+  const out = [], seen = new Set(), used = new Map();
+  for (let s = 0; s < n; s++) {
+    let made = null, want = wants[s];
+    for (let attempt = 0; attempt < 300 && !made; attempt++) {
+      if (attempt === 150) { const rest = wants.slice(s + 1); const swap = rest.findIndex(w => VT[slots[s]].some(t => t.ans.includes(w) && !t.ans.includes(want))); if (swap >= 0) { const j = s + 1 + swap; [wants[s], wants[j]] = [wants[j], wants[s]]; want = wants[s]; } }
+      const pool = VT[slots[s]].filter(t => t.ans.includes(want));
+      if (!pool.length) continue;
+      const lo = Math.min(...pool.map(t => used.get(t.id) || 0));
+      const slack = attempt > 200 ? Infinity : attempt > 60 ? 1 : 0;      // prefer unused templates, but never starve one
+      const t = g.pick(pool.filter(x => (used.get(x.id) || 0) <= lo + slack));
+      const st = t.f(g, W, want);
+      if (!st || st.answer !== want || seen.has(st.text)) continue;
+      st.template = t.id; made = st; used.set(t.id, (used.get(t.id) || 0) + 1);
+    }
+    if (!made) throw new Error("verbal: could not fill slot " + s + " (" + slots[s] + ", want " + want + ")");
+    seen.add(made.text); out.push(made);
+  }
+  return { seed, world: W, tabs, items: out };
+}
+
+const API = { makeVerbalTest, makeWorld, renderTabs, VTABS, VT };
+if (typeof module !== "undefined" && module.exports) module.exports = API; else root.AonVerbal = API;
+})(this);
+
+</script>
+<script>
 "use strict";
 const { makeTest, TABS, CATS, gbp, pounds } = AonGen;
+const { makeVerbalTest, VTABS } = AonVerbal;
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const dec = p => (p / 100).toFixed(2);
 const N = 18, SECONDS = 360;
 const ANS = { T: "True", F: "False", C: "Cannot say" };
-const KIND = { "lookup": "One lookup", "two-step": "Two-step sums", "three-step": "Three-step sums", "comparison": "Comparisons", "cannot say": "Cannot say" };
+const KIND = { "lookup": "One lookup", "two-step": "Two-step sums", "three-step": "Three-step sums", "percentage": "Percentages", "comparison": "Comparisons", "cannot say": "Cannot say",
+  "paraphrase": "Paraphrases (True)", "detail swap": "Swapped details", "absolute word": "Only / all / always", "contradiction": "Contradictions", "number": "Numbers in the text",
+  "inference": "Inferences", "two-part": "Two-part statements", "reversed rule": "Reversed rules", "criterion swap": "Swapped criteria", "invented detail": "Invented details",
+  "invented purpose": "Invented purposes", "invented role": "Invented roles", "unsupported comparison": "Unsupported comparisons" };
+const kindLabel = k => KIND[k] || k;
 
 const ICONS = {
   mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
@@ -694,11 +1285,25 @@ const ICONS = {
   exp: '<circle cx="12" cy="12" r="9"/><path d="M15 8.5c-.6-1-1.7-1.5-3-1.5-1.8 0-3 .9-3 2.3 0 3.2 6.2 1.7 6.2 5 0 1.4-1.3 2.4-3.2 2.4-1.5 0-2.7-.6-3.3-1.7M12 5.5v1.5M12 17v1.5"/>',
   hours: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   emp: '<rect x="2.5" y="4.5" width="19" height="15" rx="2"/><circle cx="8.5" cy="10.5" r="2.2"/><path d="M5 16c.6-1.7 2-2.5 3.5-2.5s2.9.8 3.5 2.5M14 9h5M14 12h5M14 15h3"/>',
+  structure: '<rect x="9.5" y="3" width="5" height="4" rx="1"/><rect x="3" y="16" width="5" height="4" rx="1"/><rect x="9.5" y="16" width="5" height="4" rx="1"/><rect x="16" y="16" width="5" height="4" rx="1"/><path d="M12 7v4.5M5.5 16v-3h13v3M12 11.5V16"/>',
+  strategy: '<path d="M8 20h8M9 20l1-6h4l1 6M10 14 8.5 9h7L14 14M12 9V4M10 5.5h4"/>',
+  principles: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M8.5 13h7M8.5 16.5h5"/>',
+  products: '<path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+  locations: '<path d="M12 21s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/>',
+  board: '<circle cx="12" cy="8" r="3"/><circle cx="5.5" cy="10" r="2.2"/><circle cx="18.5" cy="10" r="2.2"/><path d="M6.5 20c0-3 2.5-5 5.5-5s5.5 2 5.5 5M1.8 18.5c.3-2 1.8-3.4 3.7-3.4M22.2 18.5c-.3-2-1.8-3.4-3.7-3.4"/>',
 };
 const icon = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]}</svg>`;
 
-let S = { mode: "timed", test: null, cur: 0, tab: "mail", answers: [], checked: [], start: 0, end: 0, timer: null, done: false };
-try { const m = localStorage.getItem("ns-mode"); if (m === "timed" || m === "practice") S.mode = m; } catch (e) {}
+let S = { section: "num", mode: "timed", test: null, cur: 0, tab: "mail", answers: [], checked: [], start: 0, end: 0, timer: null, done: false };
+try { const m = localStorage.getItem("ns-mode"); if (m === "timed" || m === "practice") S.mode = m; const c = localStorage.getItem("ns-section"); if (c === "num" || c === "verb") S.section = c; } catch (e) {}
+const SEC = {
+  num: { label: "Numerical reasoning", tabs: TABS, make: seed => makeTest(seed, N), sheet: key => SHEETS[key](S.test.pack) },
+  verb: { label: "Verbal reasoning", tabs: VTABS, make: seed => makeVerbalTest(seed, N), sheet: key => verbalSheet(key) },
+};
+function verbalSheet(key) {
+  const t = VTABS.find(x => x.key === key).title;
+  return `<div class="sheettitle">${esc(t)}</div><div class="vsheet">${S.test.tabs[key].map(p => `<p><b>${esc(p.h)}${p.t ? ":" : ""}</b> ${esc(p.t)}</p>`).join("")}</div>`;
+}
 
 /* ---------- data sheets ---------- */
 function sheetMail(P) {
@@ -800,10 +1405,10 @@ function show(id) { for (const s of ["home", "test", "results"]) $(s).hidden = s
 
 function startTest() {
   const seed = (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
-  S.test = makeTest(seed, N);
-  S.cur = 0; S.tab = "mail"; S.answers = Array(N).fill(null); S.checked = Array(N).fill(false);
+  S.test = SEC[S.section].make(seed);
+  S.cur = 0; S.tab = SEC[S.section].tabs[0].key; S.answers = Array(N).fill(null); S.checked = Array(N).fill(false);
   S.start = Date.now(); S.end = 0; S.done = false;
-  $("ttl").textContent = S.mode === "timed" ? "Numerical reasoning · timed test" : "Numerical reasoning · practice";
+  $("ttl").textContent = SEC[S.section].label + (S.mode === "timed" ? " · timed test" : " · practice");
   clearInterval(S.timer);
   if (S.mode === "timed") { S.timer = setInterval(tick, 250); tick(); } else $("clock").textContent = "";
   show("test");
@@ -816,8 +1421,8 @@ function tick() {
   if (left === 0) finish();
 }
 function renderTabs() {
-  $("bubbles").innerHTML = TABS.map((t, i) => `<button class="bub" role="tab" aria-selected="${t.key === S.tab}" title="${t.title} (${i + 1})" aria-label="${t.title}" data-tab="${t.key}">${icon(t.key)}</button>`).join("");
-  $("sheet").innerHTML = SHEETS[S.tab](S.test.pack);
+  $("bubbles").innerHTML = SEC[S.section].tabs.map((t, i) => `<button class="bub" role="tab" aria-selected="${t.key === S.tab}" title="${t.title} (${i + 1})" aria-label="${t.title}" data-tab="${t.key}">${icon(t.key)}</button>`).join("");
+  $("sheet").innerHTML = SEC[S.section].sheet(S.tab);
 }
 function renderTest() {
   const it = S.test.items[S.cur], a = S.answers[S.cur], checked = S.checked[S.cur];
@@ -867,15 +1472,15 @@ function finish() {
   const kinds = {};
   items.forEach((it, i) => { const k = kinds[it.kind] || (kinds[it.kind] = [0, 0]); k[1]++; if (S.answers[i] === it.answer) k[0]++; });
   $("kinds").innerHTML = `<tr><th>Type</th><th class="n">Right</th><th class="n">Of</th></tr>` +
-    Object.keys(KIND).filter(k => kinds[k]).map(k => `<tr><td>${KIND[k]}</td><td class="n">${kinds[k][0]}</td><td class="n">${kinds[k][1]}</td></tr>`).join("");
+    Object.keys(kinds).sort((a, b) => kinds[b][1] - kinds[a][1]).map(k => `<tr><td>${kindLabel(k)}</td><td class="n">${kinds[k][0]}</td><td class="n">${kinds[k][1]}</td></tr>`).join("");
   $("review").innerHTML = items.map((it, i) => {
-    const a = S.answers[i], ok = a === it.answer, tab = TABS.find(t => t.key === it.tab).title;
+    const a = S.answers[i], ok = a === it.answer, tab = SEC[S.section].tabs.find(t => t.key === it.tab).title;
     const yours = !a ? `<span class="skip">No answer.</span> ` : ok ? "" : `<span class="yours">${ANS[a]}</span> `;
-    return `<li><span class="no">${i + 1}</span><div><div class="tag">${tab} · ${KIND[it.kind]}</div><div class="q">${esc(it.text)}</div><div class="a">${yours}<span class="right">${ANS[it.answer]}</span></div><div class="how">${esc(it.expl)}</div></div></li>`;
+    return `<li><span class="no">${i + 1}</span><div><div class="tag">${tab} · ${kindLabel(it.kind)}</div><div class="q">${esc(it.text)}</div><div class="a">${yours}<span class="right">${ANS[it.answer]}</span></div><div class="how">${esc(it.expl)}</div></div></li>`;
   }).join("");
   try {
     const h = JSON.parse(localStorage.getItem("ns-history") || "[]");
-    h.unshift({ d: new Date().toISOString().slice(0, 16).replace("T", " "), mode: S.mode, right, secs });
+    h.unshift({ d: new Date().toISOString().slice(0, 16).replace("T", " "), sec: S.section, mode: S.mode, right, secs });
     localStorage.setItem("ns-history", JSON.stringify(h.slice(0, 30)));
   } catch (e) {}
   show("results");
@@ -884,7 +1489,7 @@ function renderHistory() {
   let h = [];
   try { h = JSON.parse(localStorage.getItem("ns-history") || "[]"); } catch (e) {}
   $("history").innerHTML = h.length
-    ? `<div class="tablewrap"><table class="hist"><tr><th>When</th><th>Mode</th><th>Score</th><th>Time</th></tr>${h.slice(0, 10).map(r => `<tr><td>${esc(r.d)}</td><td>${r.mode === "timed" ? "Timed" : "Practice"}</td><td>${r.right} / ${N}</td><td>${Math.floor(r.secs / 60)}:${String(r.secs % 60).padStart(2, "0")}</td></tr>`).join("")}</table></div>`
+    ? `<div class="tablewrap"><table class="hist"><tr><th>When</th><th>Section</th><th>Mode</th><th>Score</th><th>Time</th></tr>${h.slice(0, 10).map(r => `<tr><td>${esc(r.d)}</td><td>${r.sec === "verb" ? "Verbal" : "Numerical"}</td><td>${r.mode === "timed" ? "Timed" : "Practice"}</td><td>${r.right} / ${N}</td><td>${Math.floor(r.secs / 60)}:${String(r.secs % 60).padStart(2, "0")}</td></tr>`).join("")}</table></div>`
     : `<p class="empty">No sessions yet. Your scores will appear here, saved in this browser only.</p>`;
 }
 
@@ -896,6 +1501,16 @@ $("modes").addEventListener("click", e => {
   try { localStorage.setItem("ns-mode", S.mode); } catch (err) {}
 });
 for (const x of document.querySelectorAll(".mode")) x.setAttribute("aria-checked", String(x.dataset.mode === S.mode));
+function showSection() {
+  for (const x of document.querySelectorAll(".segbtn")) x.setAttribute("aria-checked", String(x.dataset.sec === S.section));
+  $("tipsNum").hidden = S.section !== "num"; $("tipsVerb").hidden = S.section !== "verb";
+}
+$("sections").addEventListener("click", e => {
+  const b = e.target.closest(".segbtn"); if (!b) return;
+  S.section = b.dataset.sec; showSection();
+  try { localStorage.setItem("ns-section", S.section); } catch (err) {}
+});
+showSection();
 $("startBtn").onclick = startTest;
 $("againBtn").onclick = startTest;
 $("homeBtn").onclick = () => { renderHistory(); show("home"); };
@@ -909,7 +1524,7 @@ document.addEventListener("keydown", e => {
   if ($("test").hidden || e.metaKey || e.ctrlKey || e.altKey) return;
   const k = e.key.toLowerCase();
   if (k === "t" || k === "f" || k === "c") answer(k.toUpperCase());
-  else if (k >= "1" && k <= "6") { S.tab = TABS[+k - 1].key; renderTabs(); }
+  else if (k >= "1" && k <= "6") { S.tab = SEC[S.section].tabs[+k - 1].key; renderTabs(); }
   else if (e.key === "ArrowRight") go(1);
   else if (e.key === "ArrowLeft") go(-1);
 });

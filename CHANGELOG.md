@@ -37,3 +37,16 @@ At your request, built this before the math and diagnostics trainers.
   - A verifier gap for "Last year" Cannot-say wording.
   - Chart labels overlapping on the expenses chart.
   - A missing hidden-screen rule.
+
+## Aon Sprint: verbal section and harder numerical (2026-10-28)
+- Renamed the page from Numerical Sprint to Aon Sprint. It's the same link and now has a Numerical / Verbal switch.
+- **Verbal (new):** 18 statements across 6 text tabs about a fictional bank, with fresh facts every attempt.
+  - Statement types copy the user's mock: role and body swaps, only / all / always, invented time frames, purposes and countries, the one-way options rule, two-part statements, and inferences from tenure numbers.
+  - Answer mix: 29% True, 26% False, 45% Cannot say (the mock had 4 / 5 / 8).
+  - Verification: 20,000 tests, 360,000 statements, 0 failures. Flipping answers was caught 5,400 / 5,400 times.
+  - Manual review of a full test and one example per template found two ambiguous Cannot-say cases (a region implied by a named country; real estate funds implied across tabs). Fixed in the generator, and the checker now flags them too.
+- **Numerical, trickier in the mock's style:**
+  - Wrong values are now mostly the result of a real mistake.
+  - Weights sit near band edges more often.
+  - Added two-parcel, what-if, basket, total-cost, cost-fall, two-person overtime and a few percentage statements; plain lookups were down-weighted.
+  - Verification: 20,000 tests, 360,000 statements, 0 failures across 42 templates. Mutation check caught all 5,400 flipped answers.

@@ -118,14 +118,14 @@ function makePack(g) {
 // Pick a false value: a "trap" decoy (a real number from the wrong cell) or a near miss.
 function falseVal(g, v, decoys, nears) {
   const ds = decoys.filter(d => d !== v && d > 0);
-  if (ds.length && g.chance(0.55)) return g.pick(ds);
+  if (ds.length && g.chance(0.8)) return g.pick(ds);
   for (let i = 0; i < 20; i++) { const x = v + g.pick([-1, 1]) * g.pick(nears); if (x > 0 && x !== v) return x; }
   return v + nears[0];
 }
 const T = (ref, mul) => ({ ref, mul: mul || 1 });
 function S(tab, kind, text, answer, claim, expl) { return { tab, kind, text, answer, claim, expl }; }
 function bandIdx(P, w) { return P.mail.bands.findIndex(([lo, hi]) => w >= lo && w <= hi); }
-function weightIn(g, P, b) { const [lo, hi] = P.mail.bands[b]; return g.int(lo, hi); }
+function weightIn(g, P, b) { const [lo, hi] = P.mail.bands[b]; return g.chance(0.5) ? g.pick([lo, hi, Math.min(hi, lo + 1), Math.max(lo, hi - 1)]) : g.int(lo, hi); }
 const bandTxt = (P, b) => `${P.mail.bands[b][0]}–${P.mail.bands[b][1]} kg`;
 const otherMonth = (g, m) => g.pick(MONTHS.filter(x => x !== m));
 const poss = t => (t === "Ms" ? "her" : "his");
@@ -413,6 +413,137 @@ const TEMPLATES = {
   ],
 };
 
+
+/* ---------- extra templates: more multi-step traps in the mock's style, plus a few percentages ---------- */
+const pctTxt = p => p + "%";
+// Pick a whole-number percentage threshold at least 2 points away from the true value, on the side `want` needs.
+function pctThreshold(g, truePct, want, more) {
+  const above = Math.ceil(truePct + 2 + g.int(0, 6)), below = Math.floor(truePct - 2 - g.int(0, 6));
+  const x = (want === "T") === more ? below : above;
+  return x > 0 && x < 100 ? x : null;
+}
+TEMPLATES.mail.push(
+  { id: "mail-two-parcels", kind: "three-step", hard: true, f(g, P, want) {
+    const b1 = g.int(0, 2), b2 = g.int(0, 2), s = g.int(0, 2), w1 = weightIn(g, P, b1), w2 = weightIn(g, P, b2), m = P.mail;
+    if (w1 === w2) return null;
+    const v = m.nat[b1] + m.nat[b2] + 2 * m.exp[s];
+    const x = want === "T" ? v : falseVal(g, v, [m.nat[b1] + m.nat[b2] + m.exp[s], 2 * m.nat[b1] + 2 * m.exp[s]], [10, 50, 100]);
+    return S("mail", "three-step", `Sending ${art(w1)} kilo parcel and ${art(w2)} kilo parcel nationally, both with the '${m.svc[s]}' service, costs ${gbp(x)} in total.`, x === v ? "T" : "F",
+      { t: "cmp", w: w1, w2, svc: s, l: [T(["mail", "nat", b1]), T(["mail", "nat", b2]), T(["mail", "exp", s], 2)], op: "==", r: x, fmt: "gbp" },
+      `${gbp(m.nat[b1])} + ${gbp(m.nat[b2])} + 2 × ${gbp(m.exp[s])} (the surcharge applies to each parcel) = ${gbp(v)}.`);
+  } },
+  { id: "mail-surcharge-pct", kind: "percentage", hard: true, f(g, P, want) {
+    const b = g.int(0, 2), w = weightIn(g, P, b), m = P.mail, more = g.chance(0.5);
+    const p = (100 * m.intl[b]) / m.nat[b], X = pctThreshold(g, p, want, more);
+    if (X === null) return null;
+    const ok = more ? p > X : p < X;
+    return S("mail", "percentage", `For ${art(w)} kilo parcel, the international surcharge is ${more ? "more" : "less"} than ${pctTxt(X)} of the national price.`, ok ? "T" : "F",
+      { t: "cmp", w, pct: X, l: [T(["mail", "intl", b], 100)], op: more ? ">" : "<", r: [T(["mail", "nat", b], X)] },
+      `${gbp(m.intl[b])} ÷ ${gbp(m.nat[b])} = ${p.toFixed(1)}% of the national price.`);
+  } },
+);
+TEMPLATES.profit.push(
+  { id: "profit-difference", kind: "two-step", hard: true, f(g, P, want) {
+    const pr = P.profit, [i, j] = g.shuffle([0, 1, 2, 3]).slice(0, 2);
+    if (pr.shares[i] <= pr.shares[j]) return null;
+    const v = (pr.shares[i] - pr.shares[j]) * pr.total / 100;
+    const x = want === "T" ? v : falseVal(g, v, [pr.shares[j] * pr.total / 100, (pr.shares[i] - pr.shares[j]) * pr.total / 1000], [pr.total / 20, pr.total / 10]);
+    return S("profit", "two-step", `In ${pr.month}, ${pr.units[i]} generated ${pounds(x)} more profit than ${pr.units[j]}.`, x === v ? "T" : "F",
+      { t: "cmp", unit: i, unit2: j, month: pr.month, diff: true, l: [T(["profit", i]), T(["profit", j], -1)], op: "==", r: x, fmt: "pounds" },
+      `(${pr.shares[i]}% − ${pr.shares[j]}%) × ${pounds(pr.total)} = ${pounds(v)}.`);
+  } },
+  { id: "profit-what-if", kind: "three-step", hard: true, f(g, P, want) {
+    const pr = P.profit, i = g.int(0, 3), up = g.pick([10, 20, 25]), v = pr.shares[i] * pr.total * (100 + up) / 10000;
+    if (!Number.isInteger(v)) return null;
+    const plain = pr.shares[i] * pr.total / 100;
+    const x = want === "T" ? v : falseVal(g, v, [plain, plain + pr.total * up / 100, v * 1 + pr.total / 100], [pr.total / 20]);
+    if (!Number.isInteger(x)) return null;
+    return S("profit", "three-step", `If total profit in ${pr.month} had been ${pctTxt(up)} higher with the same shares, ${pr.units[i]} would have generated ${pounds(x)}.`, x === v ? "T" : "F",
+      { t: "cmp", unit: i, month: pr.month, pct: up, l: [T(["profit", i], 100 + up)], op: "==", r: x * 100, fmt: "pounds", rShown: x },
+      `${pounds(pr.total)} × ${(100 + up) / 100} = ${pounds(pr.total * (100 + up) / 100)}, and ${pr.shares[i]}% of that is ${pounds(v)}.`);
+  } },
+);
+TEMPLATES.price.push(
+  { id: "price-basket", kind: "three-step", hard: true, f(g, P, want) {
+    const pl = P.price, [i, j] = g.shuffle([0, 1, 2, 3, 4, 5]).slice(0, 2), m = g.int(0, 1), n = g.int(2, 4);
+    const v = pl.p[i][m] + n * pl.p[j][m];
+    const x = want === "T" ? v : falseVal(g, v, [pl.p[i][1 - m] + n * pl.p[j][1 - m], pl.p[i][m] + (n - 1) * pl.p[j][m], pl.p[i][m] + n * pl.p[j][1 - m]], [100, 200, 1000]);
+    return S("price", "three-step", `One ${pl.items[i].one} and ${word(n)} ${pl.items[j].many} for the '${pl.models[m]}' model cost ${gbp(x)} in total.`, x === v ? "T" : "F",
+      { t: "cmp", item: i, item2: j, model: m, n, l: [T(["price", i, m]), T(["price", j, m], n)], op: "==", r: x, fmt: "gbp" },
+      `${gbp(pl.p[i][m])} + ${n} × ${gbp(pl.p[j][m])} = ${gbp(v)}.`);
+  } },
+  { id: "price-pct-dearer", kind: "percentage", hard: true, f(g, P, want) {
+    const pl = P.price, i = g.int(0, 5), m = g.int(0, 1), a = pl.p[i][m], b = pl.p[i][1 - m];
+    if (a <= b) return null;
+    const p = (100 * (a - b)) / b, X = pctThreshold(g, p, want, true);
+    if (X === null) return null;
+    return S("price", "percentage", `${cap(art(pl.items[i].one))} for the '${pl.models[m]}' model is more than ${pctTxt(X)} more expensive than one for the '${pl.models[1 - m]}' model.`, p > X ? "T" : "F",
+      { t: "cmp", item: i, model: m, model2: 1 - m, pct: X, l: [T(["price", i, m], 100), T(["price", i, 1 - m], -100)], op: ">", r: [T(["price", i, 1 - m], X)] },
+      `(${gbp(a)} − ${gbp(b)}) ÷ ${gbp(b)} = ${p.toFixed(1)}% more. Divide by the cheaper (starting) price.`);
+  } },
+);
+TEMPLATES.exp.push(
+  { id: "exp-total-cost", kind: "three-step", hard: true, f(g, P, want) {
+    const e = P.exp, q = g.int(0, 5), Q = e.qty[q], v = (e.fc + e.vc[q]) * Q;
+    const x = want === "T" ? v : falseVal(g, v, [e.vc[q] * Q, e.fc * Q, (e.fc + e.vc[q === 5 ? 4 : q + 1]) * Q], [Q * 10, Q * 50]);
+    return S("exp", "three-step", `Manufacturing ${Q} units costs ${gbp(x)} in total.`, x === v ? "T" : "F",
+      { t: "cmp", q, l: [T(["exp", "fc"], Q), T(["exp", "vc", q], Q)], op: "==", r: x, fmt: "gbp", qty: Q },
+      `Total cost per unit at ${Q}: ${gbp(e.fc)} + ${gbp(e.vc[q])} = ${gbp(e.fc + e.vc[q])}; × ${Q} units = ${gbp(v)}.`);
+  } },
+  { id: "exp-unit-cost-fall", kind: "two-step", hard: true, f(g, P, want) {
+    const e = P.exp, a = g.int(0, 3), b = g.int(a + 1, 5), d = e.vc[a] - e.vc[b];
+    const X = want === "T" ? d - g.int(1, 4) * 10 : d + g.pick([0, 1]) * e.fc + g.int(1, 4) * 10;
+    if (X <= 0 || X === d) return null;
+    return S("exp", "two-step", `Between ${e.qty[a]} units and ${e.qty[b]} units, the total cost per unit falls by more than ${gbp(X)}.`, d > X ? "T" : "F",
+      { t: "cmp", q: a, q2: b, l: [T(["exp", "vc", a]), T(["exp", "vc", b], -1)], op: ">", r: X, fmt: "gbp", qty: e.qty[a], qty2: e.qty[b] },
+      `Fixed cost per unit is constant, so the fall is all variable cost: ${gbp(e.vc[a])} − ${gbp(e.vc[b])} = ${gbp(d)}.`);
+  } },
+);
+TEMPLATES.hours.push(
+  { id: "hours-pair-overtime", kind: "three-step", hard: true, f(g, P, want) {
+    const h = P.hours, [i, j] = g.shuffle([0, 1, 2, 3, 4, 5]).slice(0, 2), oi = h.actual[i] - h.agreed[i], oj = h.actual[j] - h.agreed[j];
+    const v = Math.max(0, oi) + Math.max(0, oj);
+    if (v === 0) return null;
+    const x = want === "T" ? v : falseVal(g, v, [oi + oj, Math.abs(oi) + Math.abs(oj)], [1, 2, 3]);
+    return S("hours", "three-step", `In ${h.month}, ${h.staff[i][0]} ${h.staff[i][1]} and ${h.staff[j][0]} ${h.staff[j][1]} worked ${x} hours of overtime between them.`, x === v ? "T" : "F",
+      { t: "pairOvertime", emp: i, emp2: j, month: h.month, r: x, fmt: "int" },
+      `${h.staff[i][1]}: ${oi > 0 ? oi + " overtime" : oi === 0 ? "exactly agreed hours" : -oi + " short (no overtime)"}; ${h.staff[j][1]}: ${oj > 0 ? oj + " overtime" : oj === 0 ? "exactly agreed hours" : -oj + " short (no overtime)"}. Overtime = ${v}.`);
+  } },
+  { id: "hours-pct-above", kind: "percentage", hard: true, f(g, P, want) {
+    const h = P.hours, over = [0, 1, 2, 3, 4, 5].filter(i => h.actual[i] > h.agreed[i]);
+    if (!over.length) return null;
+    const i = g.pick(over), p = (100 * (h.actual[i] - h.agreed[i])) / h.agreed[i];
+    const Xt = want === "T" ? Math.floor(p * 10 - g.int(5, 30)) : Math.ceil(p * 10 + g.int(5, 30));   // threshold in tenths of a percent
+    if (Xt <= 0) return null;
+    const X = Xt / 10, [t, n] = h.staff[i];
+    return S("hours", "percentage", `${t} ${n} worked more than ${pctTxt(X)} above ${poss(t)} agreed hours in ${h.month}.`, p > X ? "T" : "F",
+      { t: "cmp", emp: i, month: h.month, pct: X, l: [T(["hours", "actual", i], 1000), T(["hours", "agreed", i], -1000)], op: ">", r: [T(["hours", "agreed", i], Xt)] },
+      `(${h.actual[i]} − ${h.agreed[i]}) ÷ ${h.agreed[i]} = ${p.toFixed(2)}%.`);
+  } },
+);
+TEMPLATES.emp.push(
+  { id: "emp-pct-change", kind: "percentage", hard: true, f(g, P, want) {
+    const e = P.emp, c = g.int(0, 2), a = g.int(0, 2), b = g.int(a + 1, 3), va = e.cats[c][a], vb = e.cats[c][b];
+    if (vb <= va) return null;
+    const p = (100 * (vb - va)) / va, X = pctThreshold(g, p, want, true);
+    if (X === null) return null;
+    return S("emp", "percentage", `The number of ${CATS[c].noun} rose by more than ${pctTxt(X)} from financial year ${e.years[a]} to financial year ${e.years[b]}.`, p > X ? "T" : "F",
+      { t: "cmp", cat: c, year: e.years[a], year2: e.years[b], pct: X, l: [T(["emp", c, b], 100), T(["emp", c, a], -100)], op: ">", r: [T(["emp", c, a], X)] },
+      `(${vb} − ${va}) ÷ ${va} = ${p.toFixed(1)}%. Divide by the earlier year.`);
+  } },
+  { id: "emp-share-of-total", kind: "percentage", hard: true, f(g, P, want) {
+    const e = P.emp, c = g.int(0, 2), y = g.int(0, 3), p = (100 * e.cats[c][y]) / e.total[y], more = g.chance(0.5), X = pctThreshold(g, p, want, more);
+    if (X === null) return null;
+    const ok = more ? p > X : p < X;
+    return S("emp", "percentage", `In financial year ${e.years[y]}, ${CATS[c].noun} made up ${more ? "more" : "less"} than ${pctTxt(X)} of all employees.`, ok ? "T" : "F",
+      { t: "cmp", cat: c, year: e.years[y], pct: X, l: [T(["emp", c, y], 100)], op: more ? ">" : "<", r: [T(["emp", "total", y], X)] },
+      `${e.cats[c][y]} ÷ ${e.total[y]} (the Total bar) = ${p.toFixed(1)}%.`);
+  } },
+);
+// Lookups are the easy part of the mock; down-weight them so a test leans on multi-step and percentage work.
+const KIND_W = { "lookup": 0.5, "two-step": 1.5, "three-step": 1.6, "comparison": 1.3, "percentage": 0.7 };
+for (const k of Object.keys(TEMPLATES)) for (const t of TEMPLATES[k]) t.w = t.cs ? 1 : KIND_W[t.kind];
+
 const TABS = [
   { key: "mail", title: "Mail order" },
   { key: "profit", title: "Profit" },
@@ -421,6 +552,8 @@ const TABS = [
   { key: "hours", title: "Working hours" },
   { key: "emp", title: "Employees" },
 ];
+
+function wpick(g, a) { let r = g.f() * a.reduce((s, t) => s + t.w, 0); for (const t of a) { r -= t.w; if (r < 0) return t; } return a[a.length - 1]; }
 
 /* One test: n statements, 3 per tab, mixed order, about 30% Cannot say, the rest split True/False. */
 function makeTest(seed, n) {
@@ -437,7 +570,8 @@ function makeTest(seed, n) {
       if (attempt === 120) want = want === "C" ? "T" : want;         // fall back if a tab cannot make the wanted kind
       const pool = TEMPLATES[slots[s]].filter(t => !!t.cs === (want === "C"));
       const lo = Math.min(...pool.map(t => used.get(t.id) || 0));
-      const t = g.pick(pool.filter(x => (used.get(x.id) || 0) <= lo + (attempt > 40 ? 1 : 0)));
+      const slack = attempt > 160 ? Infinity : attempt > 40 ? 1 : 0;      // prefer unused templates, but never starve one
+      const t = wpick(g, pool.filter(x => (used.get(x.id) || 0) <= lo + slack));
       const st = t.f(g, P, want);
       if (!st || seen.has(st.text) || (want !== "C" && st.answer !== want)) continue;
       st.template = t.id; made = st;
